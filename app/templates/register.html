@@ -1,0 +1,28 @@
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block title %}User Register{% endblock title %}
+
+
+{% block content %}
+<div class="container">
+        {% for message in get_flashed_messages(with_categories=True) %}
+        <div class="alert alert-warning">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                {{ message }}
+        </div>
+        {% endfor %}
+
+        <h1> Register New Account</h1>
+
+        <form calss='form' method='POST'>
+                <!-- {{ wtf.quick_form(form)}} -->
+                {{ form.hidden_tag() }}
+                {{ wtf.form_field(form.username) }}
+                {{ wtf.form_field(form.password) }}
+                {{ wtf.form_field(form.confirm) }}
+                {{ wtf.form_field(form.submit) }}
+                {{ wtf.form_field(form.reset) }}
+        </form>
+
+</div>
+{% endblock %}

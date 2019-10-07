@@ -1,0 +1,21 @@
+{% extends "bootstrap/base.html" %}
+
+{% block title %}Upload{% endblock title %}
+
+{% block content %}
+
+    {% for message in get_flashed_messages(with_categories=True) %}
+    <div class="alert alert-warning">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            {{ message }}
+    </div>
+    {% endfor %}
+
+    <form action="/upload_submit" enctype="multipart/form-data" method="post">
+        Select a photo <br><br>
+        <input type="file" name="uploadedfile">
+        <br>
+        <input type="submit" value="Send">
+    </form>
+
+{% endblock %}
