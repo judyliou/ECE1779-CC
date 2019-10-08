@@ -93,22 +93,3 @@ def upload():
     
     flash('No file selected')
     return render_template("upload.html")    
-    
-
-
-# @webapp.route('/upload', methods=['GET', 'POST'])
-# def upload():
-#     form = UploadForm()
-
-#     if form.validate_on_submit():
-#         f = form.photo.data
-#         filename = form.file.data.filename
-        
-#         print(filename)
-#         return redirect(url_for('go_album'))
-#         # Save to S3
-#         # s3 = boto3.resource('s3')
-#         # s3.Object('ece1779testbucket', ).put(Body=open('/tmp/hello.txt', 'rb'))
-#     print(form.errors)   
-#     # return 'wrong uplaod'
-#     return render_template('upload.html', form=form)
