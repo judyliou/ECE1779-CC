@@ -8,10 +8,6 @@ from app.utils import *
 
 bootstrap=Bootstrap(webapp)
 
-####### TO DO #######
-# - hash password
-
-
 
 @webapp.route('/')
 @webapp.route('/index')
@@ -19,10 +15,19 @@ def index():
     is_login = False
     if session.get('username') is not None:
         is_login = True
-    return render_template('base.html', is_login=is_login)  ##### change to main page
+    return render_template('base.html', is_login=is_login) 
 
 @webapp.route('/register', methods=['GET', 'POST'])  
 def register():
+    """ Go to the register page.
+
+    After the user submit the register form (username, password and confirmed
+    confirmed password included), the browser side invalidate all inputs and 
+    check whether username exist in database or not. If not, insert the user 
+    information into database ('users' table), and jump to login page; otherwise,
+    falsh a warning and ask the user to register again.
+    
+    """
     form = RegisterForm()
     username = request.form.get('username')
     password = request.form.get('password')
@@ -54,6 +59,16 @@ def register():
 
 @webapp.route('/login', methods=['GET', 'POST'])  
 def login():
+    """ Go to the login page.
+    
+    After the client post the user information (username and password), connect 
+    to database to check whether the username exists and match with password.
+    
+    If both username and password are valid, add username to the session and 
+    jump to homepage; otherwise, falsh a warning and ask to insert username and 
+    password again.
+
+    """
     form = LoginForm()
     username = request.form.get('username')
     password = request.form.get('password')
@@ -80,13 +95,11 @@ def login():
                 # session.permanent = True
                 session['username'] = username
                 return redirect(url_for('index'))
-                # return redirect(url_for('index'))
     return render_template("login.html", form=form)
 
 
 @webapp.route('/logout')
 def logout():
-    # session.pop('username', None)
     session.clear()
     flash('You were logged out')
     return redirect(url_for('index'))
