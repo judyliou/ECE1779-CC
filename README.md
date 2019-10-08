@@ -1,1 +1,1 @@
-# ECE1779-CloudComputing
+# ECE1779-Cloud Computing
