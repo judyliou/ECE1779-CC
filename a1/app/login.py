@@ -82,13 +82,14 @@ def login():
         
         query = '''SELECT * FROM users WHERE userID = %s'''
         cursor.execute(query, (username,))
-        pwd_db = cursor.fetchone()[1]
-        if pwd_db is None:
-            flash('Invalid username. Try again or create a new account.', 'warning')
+        user_result = cursor.fetchone()
+        if user_result is None:
+            flash('Invalid username! Try again or create a new account.', 'warning')
             return redirect(url_for('login'))
         else:
+            pwd_db = user_result[1]
             if pwd_db != password:
-                flash('Wrong password.', 'warning')
+                flash('Wrong password!', 'warning')
                 return redirect(url_for('login'))
             else:
                 flash('Login Success!', 'success')
@@ -101,6 +102,6 @@ def login():
 @webapp.route('/logout')
 def logout():
     session.clear()
-    flash('You were logged out')
+    flash('You were logged out', 'success')
     return redirect(url_for('index'))
 

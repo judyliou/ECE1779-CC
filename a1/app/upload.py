@@ -51,7 +51,7 @@ def upload_form():
 def upload():
     username = session.get('username')
     if not 'username': # check whether the user is logged in
-        flash('Pleas log in first')
+        flash('Pleas log in first!', 'warning')
         return redirect(url_for('login'))
 
     file = request.files.get('uploadedfile')
@@ -59,11 +59,11 @@ def upload():
     if file:
         filename = file.filename
         if filename == '':
-            flash('Missing filename')
+            flash('Missing filename!', 'warning')
             return render_template("upload.html") 
 
         if not allowed_file(filename):
-            flash('Only image files allowed')
+            flash('Only image files allowed!', 'warning')
             return render_template("upload.html") 
         else:  
             # Save to S3
@@ -88,8 +88,8 @@ def upload():
             cnx.commit()
 
 
-            flash('Photo Upload Success!')
+            flash('Photo Upload Success!', 'success')
             return redirect(url_for('go_album'))
     
-    flash('No file selected')
+    flash('No file selected!', 'warning')
     return render_template("upload.html")    
