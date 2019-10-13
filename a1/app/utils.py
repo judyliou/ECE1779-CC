@@ -80,3 +80,14 @@ def keynameFactory(filename):
     print(key0)
 
     return [key0, key1, key2]
+
+def normalName(name):
+    """
+    from modified filename, extract normal name
+    without extension
+    :param name: filename (a##001.png)
+    :return: a
+    """
+
+    nameParts = name.split("##")
+    return "##".join(nameParts[0:len(nameParts) - 1])

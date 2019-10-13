@@ -1,0 +1,28 @@
+
+<head>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/ui.css') }}">
+    {% extends "bootstrap/base.html" %}
+    {% block title %} A1-Album {% endblock title %}
+</head>
+
+<body>
+{% block navbar %}
+    <!-- <h1>Welcom ECE1779 Assignment 1</h1><br> -->
+
+<ul class ="nav nav-tabs">
+    <li><a href="/index">Home</a></li>
+    <li class="active"><a href="/album">Album</a></li>
+</ul>
+
+{%- endblock navbar %}
+
+
+{% block content %}
+
+    <div class="twoImageBlock">
+        <img src="{{ key0 }}" class="listImage">
+        <img src="{{ key1 }}" class="listImage">
+    </div>
+
+{% endblock %}
+</body>

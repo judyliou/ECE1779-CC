@@ -1,28 +1,30 @@
-{% extends "bootstrap/base.html" %}
-
-{% block title %} A1-Album {% endblock title %}
+<head>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/ui.css') }}">
+    {% extends "bootstrap/base.html" %}
+    {% block title %} A1-Album {% endblock title %}
+</head>
 
 {% block navbar %}
     <!-- <h1>Welcom ECE1779 Assignment 1</h1><br> -->
 
-<ul class ="nav nav-tabs">
-    <li><a href="/index">Home</a></li>
-    <li class="active"><a href="/album">Album</a></li>
-</ul>
+    <ul class="nav nav-tabs">
+        <li><a href="/index">Home</a></li>
+        <li class="active"><a href="/album">Album</a></li>
+    </ul>
 
 {%- endblock navbar %}
 
 
 {% block content %}
-    
+
     {% for message in get_flashed_messages(with_categories=True) %}
-    <div class="alert alert-warning">
+        <div class="alert alert-warning">
             <button type="button" class="close" data-dismiss="alert">&times;</button>
             {{ message }}
-    </div>
+        </div>
     {% endfor %}
 
-    
+
     <h3>This is my album.</h3>
     <br>
     <button type="button" class="btn"><a href="/upload">Upload New Photo</a></button>
@@ -30,7 +32,8 @@
 
     <div class="col-md-3">
         {% for url in urls %}
-        <img src="{{ url }}" class="img-thumbnail">
+            <img src="{{ url[0] }}" class="img-thumbnail">
+            <a href="{{ url_for('viewImage', key=url[1]) }}">{{ url[2] }}</a>
         {% endfor %}
     </div>
     <!-- {% for url_row in urls | batch(3, '&nbsp;') %}
