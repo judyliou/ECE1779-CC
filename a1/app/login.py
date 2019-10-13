@@ -93,7 +93,7 @@ def login():
                 return redirect(url_for('login'))
             else:
                 flash('Login Success!', 'success')
-                # session.permanent = True
+                session.permanent = True
                 session['username'] = username
                 return redirect(url_for('index'))
     return render_template("login.html", form=form)
