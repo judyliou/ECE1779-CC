@@ -4,6 +4,11 @@ import os
 SECRET_KEY = 'hard to guess'
 
 S3_BUCKET = 'ece1779-junbang-a1'
+#
+# S3_BUCKET = os.environ.get("S3_BUCKET")
+# S3_KEY = os.environ.get("S3_ACCESS_KEY")
+# S3_SECRET = os.environ.get("S3_SECRET_ACCESS_KEY")
+# S3_LOCATION = 'http://{}.s3.amazonaws.com/'.format(S3_BUCKET)
 
 # db_config = {'user': 'ece1779', 
 #              'password': 'secret',
