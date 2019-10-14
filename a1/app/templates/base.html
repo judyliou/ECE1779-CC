@@ -1,33 +1,41 @@
-{% extends "bootstrap/base.html" %}
-
-{% block title %}ECE1779 A1{% endblock title %}
+<head>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/ui.css') }}">
+    {% extends "bootstrap/base.html" %}
+    {% block title %}ECE1779 A1{% endblock title %}
+</head>
 
 {% block navbar %}
     <!-- <h1>Welcom ECE1779 Assignment 1</h1><br> -->
 
-<ul class ="nav nav-tabs">
-    <li class="active"><a href="/index">Home</a></li>
-    <li><a href="/album">Album</a></li>
-</ul>
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="/index">Home</a></li>
+        <li><a href="/album">Album</a></li>
+    </ul>
 
 {%- endblock navbar %}
 
 {% block content %}
     {% for message in get_flashed_messages(with_categories=True) %}
+<<<<<<< HEAD
     <div class="alert alert-{{ message[0] }}">
             <button type="button" class="close" data-dismiss="alert">&times;</button>
             {{ message[1] }}
     </div>
+=======
+        <div class="alert alert-warning">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            {{ message }}
+        </div>
+>>>>>>> 67fe3ce4a444f8b635fd79b53f1489f86309988c
     {% endfor %}
-    
-    <h3>This is home page.</h3><br>
-    
+
     {% if is_login == true %}
-        <button type="button" class="btn"><a href="/logout">Logout</a></button>
+        <p class="userTitle"> Hello, {{ username }} </p>
+        <button type="button" class="btn btnBlock"><a href="/logout">Logout</a></button>
     {% else %}
-        <button type="button" class="btn"><a href="/login">Login</a></button>
-        <button type="button" class="btn"><a href="/register">Register</a></button>
+        <button type="button" class="btn btnBlock"><a href="/login">Login</a></button>
+        <button type="button" class="btn btnBlock"><a href="/register">Register</a></button>
     {% endif %}
-    
+
 
 {% endblock %}

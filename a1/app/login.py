@@ -1,23 +1,25 @@
 from flask import render_template, request, url_for, redirect, flash, session
 from flask_bootstrap import Bootstrap
 
-from app.forms import RegisterForm, LoginForm
-from app import webapp
-import config
-from app.utils import *
+from a1.app.forms import RegisterForm, LoginForm
+from a1.app.utils import *
 
-bootstrap=Bootstrap(webapp)
+bootstrap = Bootstrap(webapp)
+
 
 
 @webapp.route('/')
 @webapp.route('/index')
 def index():
     is_login = False
+    username = ""
     if session.get('username') is not None:
         is_login = True
-    return render_template('base.html', is_login=is_login) 
+        username = session.get('username')
+    return render_template('base.html', is_login=is_login, username=username)  ##### change to main page
 
-@webapp.route('/register', methods=['GET', 'POST'])  
+
+@webapp.route('/register', methods=['GET', 'POST'])
 def register():
     """ Go to the register page.
 
@@ -31,8 +33,8 @@ def register():
     form = RegisterForm()
     username = request.form.get('username')
     password = request.form.get('password')
-    
-    if form.reset.data: # if click "Reset"
+
+    if form.reset.data:  # if click "Reset"
         return redirect(url_for('register'))
 
     if form.validate_on_submit():
@@ -41,23 +43,25 @@ def register():
         # 3. Insert to DB
         cnx = get_db()
         cursor = cnx.cursor()
-        
+
+        encPwd = encryptString(password)
+
         query = '''SELECT * FROM users WHERE userID = %s'''
         cursor.execute(query, (username,))
         if cursor.fetchone() is not None:
             flash('The username is used.', 'warning')
-            return redirect(url_for('register')) # not sure
+            return redirect(url_for('register'))  # not sure
         else:
             query = '''INSERT INTO users (userID, password) VALUES (%s, %s)'''
-            cursor.execute(query, (username, password))
+            cursor.execute(query, (username, encPwd))
             cnx.commit()
             flash('Registration Success! Please login.', 'success')
             return redirect(url_for('login'))
-            # return render_template('/uploadimg.html')
+            # return render_template('/uploading.html')
     return render_template('register.html', form=form)
 
 
-@webapp.route('/login', methods=['GET', 'POST'])  
+@webapp.route('/login', methods=['GET', 'POST'])
 def login():
     """ Go to the login page.
     
@@ -79,7 +83,9 @@ def login():
         # 3. Check whether exist and password
         cnx = get_db()
         cursor = cnx.cursor()
-        
+
+        encPwd = encryptString(password)
+
         query = '''SELECT * FROM users WHERE userID = %s'''
         cursor.execute(query, (username,))
         user_result = cursor.fetchone()
@@ -88,7 +94,7 @@ def login():
             return redirect(url_for('login'))
         else:
             pwd_db = user_result[1]
-            if pwd_db != password:
+            if pwd_db != encPwd:
                 flash('Wrong password!', 'warning')
                 return redirect(url_for('login'))
             else:
@@ -104,4 +110,3 @@ def logout():
     session.clear()
     flash('You were logged out', 'success')
     return redirect(url_for('index'))
-

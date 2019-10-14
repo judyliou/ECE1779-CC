@@ -1,6 +1,8 @@
-{% extends "bootstrap/base.html" %}
-
-{% block title %}Upload{% endblock title %}
+<head>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/ui.css') }}">
+    {% extends "bootstrap/base.html" %}
+    {% block title %}Upload{% endblock title %}
+</head>
 
 {% block content %}
 
@@ -10,6 +12,10 @@
             {{ message[1] }}
     </div>
     {% endfor %}
+
+    {% if sizeError != null %}
+        <p class="sizeError"> {{ sizeError }} </p>
+    {% endif %}
 
     <form action="/upload_submit" enctype="multipart/form-data" method="post">
         Select a photo <br><br>

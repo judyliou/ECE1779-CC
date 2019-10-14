@@ -3,6 +3,7 @@ from flask_wtf.file import FileField, FileAllowed, FileRequired
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import InputRequired, Length, EqualTo
 
+
 class RegisterForm(FlaskForm):
     username = StringField('Username', validators=[
         # InputRequired(),
@@ -14,9 +15,9 @@ class RegisterForm(FlaskForm):
         EqualTo('confirm', message='Password must match.')
     ])
     confirm = PasswordField('Repeat Password')
-    submit = SubmitField('Register') 
+    submit = SubmitField('Register')
     reset = SubmitField('Reset')
-    
+
     # reset button
 
 
