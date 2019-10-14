@@ -77,7 +77,6 @@ def keynameFactory(filename):
     key0 = fileShort + "##" + '{:03}'.format(len(results)) + "_key0" + "." + fileType
     key1 = fileShort + "##" + '{:03}'.format(len(results)) + "_key1" + "." + fileType
     key2 = fileShort + "##" + '{:03}'.format(len(results)) + "_key2" + "." + fileType
-    print(key0)
 
     return [key0, key1, key2]
 

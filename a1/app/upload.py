@@ -82,6 +82,10 @@ def upload():
 
             # Save the original photo
             file.save(filepath)
+            # file size cannot be larger than 50mb, perhaps?
+            if os.path.getsize(filepath) > 50*1024*1024:
+                sizeError = "The file size is larger than limit."
+                return render_template("upload.html", sizeError=sizeError)
 
             # here we need to change the other two to right files
             with open(filepath, 'rb') as tmp:

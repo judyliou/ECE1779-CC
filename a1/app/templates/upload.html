@@ -13,11 +13,13 @@
         </div>
     {% endfor %}
 
+    {% if sizeError != null %}
+        <p class="sizeError"> {{ sizeError }} </p>
+    {% endif %}
+
     <form action="/upload_submit" enctype="multipart/form-data" method="post">
         <p class="uploadTitle"> Select a photo </p>
-
         <input name="uploadedfile" type="file" class="uploadPath"/>
-
         <input type="submit" value="Send" class="uploadBtn btn">
     </form>
 

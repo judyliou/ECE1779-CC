@@ -10,3 +10,6 @@ webapp.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=24)
 from a1.app import login
 from a1.app import upload
 from a1.app import viewImage
+from a1.app.api import blueprint as api
+
+webapp.register_blueprint(api, url_prefix='/api')

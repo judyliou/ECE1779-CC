@@ -8,8 +8,6 @@ from a1.config import S3_BUCKET
 
 @webapp.route("/viewImage/<key>", methods=['GET'])
 def viewImage(key):
-    print(key)
-
     cnx = get_db()
     cursor = cnx.cursor()
 

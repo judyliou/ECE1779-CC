@@ -2,8 +2,6 @@ from flask import render_template, request, url_for, redirect, flash, session
 from flask_bootstrap import Bootstrap
 
 from a1.app.forms import RegisterForm, LoginForm
-from a1.app import webapp
-import config
 from a1.app.utils import *
 
 bootstrap = Bootstrap(webapp)
@@ -41,7 +39,6 @@ def register():
         cursor = cnx.cursor()
 
         encPwd = encryptString(password)
-        print(encPwd)
 
         query = '''SELECT * FROM users WHERE userID = %s'''
         cursor.execute(query, (username,))
