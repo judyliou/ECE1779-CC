@@ -17,9 +17,11 @@ bootstrap = Bootstrap(webapp)
 @webapp.route('/index')
 def index():
     is_login = False
+    username = ""
     if session.get('username') is not None:
         is_login = True
-    return render_template('base.html', is_login=is_login)  ##### change to main page
+        username = session.get('username')
+    return render_template('base.html', is_login=is_login, username=username)  ##### change to main page
 
 
 @webapp.route('/register', methods=['GET', 'POST'])

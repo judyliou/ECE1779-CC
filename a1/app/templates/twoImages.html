@@ -20,8 +20,15 @@
 {% block content %}
 
     <div class="twoImageBlock">
-        <img src="{{ key0 }}" class="listImage">
-        <img src="{{ key1 }}" class="listImage">
+        <div class="imageBlock">
+            <img src="{{ key0 }}" class="bigImage">
+            <p class="imgLabel">original image</p>
+        </div>
+        <div class="imageBlock">
+            <img src="{{ key1 }}" class="bigImage">
+            <p class="imgLabel">after detected</p>
+        </div>
+
     </div>
 
 {% endblock %}
