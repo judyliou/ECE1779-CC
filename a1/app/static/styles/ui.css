@@ -1,0 +1,76 @@
+.imageList {
+    width: 100%;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    margin-left: 30px;
+}
+
+.imageBlock {
+    display: inline-block;
+    margin: 20px 10px;
+}
+
+.twoImageBlock {
+    text-align: center;
+    margin-top: 50px;
+}
+
+.listImage {
+    display: block;
+    width: 200px;
+}
+
+.bigImage {
+    display: block;
+    width: 400px;
+}
+
+.imgLabel {
+    display: block;
+    font-size: 20px;
+    text-align: center;
+    margin-top: 5px;
+}
+
+.btnBlock {
+    margin-left: 40px;
+    margin-top: 20px;
+}
+
+.uploadTitle {
+    text-align: center;
+    font-size: 20px;
+    margin-top: 50px;
+}
+
+.uploadPath {
+    display: block !important;
+    margin-top: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 15px;
+}
+
+.uploadBtn {
+    display: block !important;
+    font-size: 15px;
+    margin-top: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 10%;
+}
+
+input[type="file"] {
+}
+
+.userTitle {
+    margin-top: 20px;
+    margin-left: 40px;
+    font-size: 15px;
+}
+
+.sizeError {
+    color: red;
+    text-align: center;
+    margin-top: 20px;
+}
