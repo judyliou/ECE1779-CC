@@ -4,9 +4,9 @@ import tempfile
 from flask import request, jsonify, Response, make_response
 from flask import Blueprint
 
-from a1.app.upload import allowed_file
-from a1.app.utils import *
-from a1.config import S3_BUCKET
+from app.upload import allowed_file
+from app.utils import *
+from config import S3_BUCKET
 
 blueprint = Blueprint('api', __name__)
 @blueprint.route('/register', methods=['POST'])

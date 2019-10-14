@@ -1,8 +1,8 @@
 from flask import render_template, request, url_for, redirect, flash, session
 from flask_bootstrap import Bootstrap
 
-from a1.app.forms import RegisterForm, LoginForm
-from a1.app.utils import *
+from app.forms import RegisterForm, LoginForm
+from app.utils import *
 
 bootstrap = Bootstrap(webapp)
 

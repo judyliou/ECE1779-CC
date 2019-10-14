@@ -1,15 +1,15 @@
 from flask import render_template, request, url_for, redirect, flash, session
 from flask_uploads import UploadSet, IMAGES, configure_uploads, patch_request_class
-from a1.app import webapp
+from app import webapp
 import boto3
 import tempfile
 from PIL import Image
 import os
 import tempfile
 
-from a1.config import S3_BUCKET
+from config import S3_BUCKET
 
-from a1.app.utils import get_db, keynameFactory, normalName
+from app.utils import get_db, keynameFactory, normalName
 
 
 def allowed_file(filename):

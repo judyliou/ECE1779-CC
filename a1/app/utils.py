@@ -5,8 +5,8 @@ from botocore.exceptions import ClientError
 import logging
 import hashlib
 
-from a1.config import db_config
-from a1.app import webapp
+from config import db_config
+from app import webapp
 
 
 def connect_to_database():

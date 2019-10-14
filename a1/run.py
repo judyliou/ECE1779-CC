@@ -1,3 +1,3 @@
-from a1.app import webapp
+from app import webapp
 
 webapp.run(debug=True)
