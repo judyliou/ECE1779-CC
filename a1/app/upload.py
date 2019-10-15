@@ -1,19 +1,15 @@
 from flask import render_template, request, url_for, redirect, flash, session
 from flask_uploads import UploadSet, IMAGES, configure_uploads, patch_request_class
 from app import webapp
-import boto3
-import tempfile
-from PIL import Image
+import cv2
 import os
-import tempfile
 
-from config import S3_BUCKET
-
+from text_detection import detect_text
 from app.utils import get_db, keynameFactory, normalName
 
 
 def allowed_file(filename):
-    return filename.split('.')[1] in ['png', 'jpg', 'JPG', 'PNG', 'gif', 'GIF']
+    return filename.split('.')[-1] in ['png', 'jpg', 'JPG', 'PNG', 'gif', 'GIF']
 
 
 @webapp.route('/album')
@@ -32,19 +28,9 @@ def go_album():
         thumbnails = [item[0] for item in cursor.fetchall()]
         urls = []
         for key in thumbnails:
-            # Retrieve images from S3
-            s3 = boto3.client('s3')
-
-            url = s3.generate_presigned_url(
-                ClientMethod='get_object',
-                Params={
-                    'Bucket': S3_BUCKET,
-                    'Key': key
-                }
-            )
             normName = normalName(key)
+            url = url_for('static', filename='uploads/'+key)
             urls.append([url, key, normName])
-
         return render_template('myalbum.html', urls=urls)
 
 
@@ -70,40 +56,27 @@ def upload():
         if not allowed_file(filename):
             flash('Only image files allowed!', 'warning')
             return render_template("upload.html") 
-        else:  
-            # Save to S3
-            s3 = boto3.resource('s3')
-            path = tempfile.mkdtemp()
-            # keys generated here, then save the original into tmp (key[0])
-            # keys[1][2] are still waited to be created
+        else:            
+            # keys generated here
+            # (key0: original photo/key1: text-detected photo/key2: thumbnail)
             key = username + '_' + filename
             keys = keynameFactory(key)
-            filepath = path + keys[0]
 
-            # Save the original photo
-            file.save(filepath)
-            # file size cannot be larger than 50mb, perhaps?
-            if os.path.getsize(filepath) > 50*1024*1024:
-                sizeError = "The file size is larger than limit."
-                return render_template("upload.html", sizeError=sizeError)
+            path = os.path.join(os.getcwd(), "app", "static", "uploads")
+            img_org = os.path.join(path, keys[0])
+            file.save(img_org)
+          
+            # Text detection
+            img_detected = detect_text(img_org)
+            img_thumb = cv2.resize(img_detected, None, fx=0.3, fy=0.3)
 
-            # here we need to change the other two to right files
-            with open(filepath, 'rb') as tmp:
-                s3.Bucket(S3_BUCKET).put_object(Key=keys[0], Body=tmp)
-            with open(filepath, 'rb') as tmp:
-                s3.Bucket(S3_BUCKET).put_object(Key=keys[1], Body=tmp)
-            with open(filepath, 'rb') as tmp:
-                s3.Bucket(S3_BUCKET).put_object(Key=keys[2], Body=tmp)
-
-            ##################### TO DO ######################
-            # 1. text detection                              #
-            # 2. save the result and thumbnail of the result #                              #
-            ##################################################
+            # Save the detected photos to hard drive
+            cv2.imwrite(os.path.join(path, keys[1]), img_detected)
+            cv2.imwrite(os.path.join(path, keys[2]), img_thumb)
+            
+            # Write into DB
             cnx = get_db()
             cursor = cnx.cursor()
-
-            # a function to create 3 key names
-
             query = '''INSERT INTO photos (userID, key0, key1, key2) VALUES (%s, %s, %s, %s)'''
             cursor.execute(query, (username, keys[0], keys[1], keys[2]))
             cnx.commit()
