@@ -3,7 +3,6 @@ from flask import render_template, redirect, url_for
 import boto3
 
 from app.utils import get_db
-from config import S3_BUCKET
 
 
 @webapp.route("/viewImage/<key>", methods=['GET'])
