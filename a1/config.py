@@ -4,13 +4,13 @@ import os
 SECRET_KEY = 'hard to guess'
 
 
-# db_config = {'user': 'ece1779', 
-#              'password': 'secret',
-#              'host': '127.0.0.1',
-#              'database': 'ece1779'}
+db_config = {'user': 'root',
+             'password': 'SQLsecret',
+             'host': '127.0.0.1',
+             'database': 'newdb'}
 
 # change!
-db_config = {'user': 'root',
-             'password': 'ece1779pass',
-             'host': '127.0.0.1',
-             'database': 'a1'}
+# db_config = {'user': 'root',
+#              'password': 'ece1779pass',
+#              'host': '127.0.0.1',
+#              'database': 'a1'}
