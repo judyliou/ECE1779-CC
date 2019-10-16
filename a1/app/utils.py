@@ -4,6 +4,7 @@ import boto3
 from botocore.exceptions import ClientError
 import logging
 import hashlib
+import random
 
 from config import db_config
 from app import webapp
@@ -90,3 +91,12 @@ def normalName(name):
 
     nameParts = name.split("##")
     return "##".join(nameParts[0:len(nameParts) - 1])
+
+def randomString(length):
+    result = ""
+    characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+    charactersLength = len(characters)
+    for i in range(length):
+        result += characters[random.randint(0, charactersLength - 1)]
+    print(result)
+    return result
