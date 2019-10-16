@@ -11,8 +11,8 @@ from config import S3_BUCKET
 blueprint = Blueprint('api', __name__)
 @blueprint.route('/register', methods=['POST'])
 def register():
-    username = str(request.args.get('username'))
-    password = str(request.args.get('password'))
+    username = str(request.form.get('username'))
+    password = str(request.form.get('password'))
 
     # username too long
     # need to figure out which status respond to which situation
@@ -24,15 +24,17 @@ def register():
     cnx = get_db()
     cursor = cnx.cursor()
 
-    encPwd = encryptString(password)
     query = '''SELECT * FROM users WHERE userID = %s'''
     cursor.execute(query, (username,))
     if cursor.fetchone() is not None:
         # some http response
         return make_response("{success: false}", 404)
     else:
-        query = '''INSERT INTO users (userID, password) VALUES (%s, %s)'''
-        cursor.execute(query, (username, encPwd))
+        # here salt is created
+        salt = randomString(12)
+        encPwd = encryptString(password + salt)
+        query = '''INSERT INTO users (userID, password, salt) VALUES (%s, %s, %s)'''
+        cursor.execute(query, (username, encPwd, salt, ))
         cnx.commit()
         # 200
         return make_response("{success: true}", 200)
@@ -49,15 +51,17 @@ def upload():
     cnx = get_db()
     cursor = cnx.cursor()
 
-    query = '''select password from users where userID = %s '''
+    query = '''select * from users where userID = %s '''
     cursor.execute(query, (username, ))
-    correctPwd = cursor.fetchone()[0]
-    if correctPwd is None:
+    user = cursor.fetchone()
+    if user is None:
         ################### some http status
         # user not existed
         return
     else :
-        encPwd = encryptString(password)
+        correctPwd = user[1]
+        salt = user[2]
+        encPwd = encryptString(password + salt)
         if correctPwd != encPwd:
             ################### some http status
             # password not matched
