@@ -17,9 +17,9 @@ def register():
     # username too long
     # need to figure out which status respond to which situation
     if len(username) > 100:
-        return make_response("{success: false}", 404)
+        return make_response("{ success: false, error: \"username is too long\" }", 400)
     elif username is None or len(username) == 0:
-        return make_response("{success: false}", 404)
+        return make_response("{ success: false, error: \"username is needed\" }", 400)
 
     cnx = get_db()
     cursor = cnx.cursor()
@@ -28,7 +28,7 @@ def register():
     cursor.execute(query, (username,))
     if cursor.fetchone() is not None:
         # some http response
-        return make_response("{success: false}", 404)
+        return make_response("{success: false, error: \"user already existed\" }", 400)
     else:
         # here salt is created
         salt = randomString(12)
@@ -36,10 +36,10 @@ def register():
         query = '''INSERT INTO users (userID, password, salt) VALUES (%s, %s, %s)'''
         cursor.execute(query, (username, encPwd, salt, ))
         cnx.commit()
-        # 200
-        return make_response("{success: true}", 200)
+        # 201
+        return make_response("{success: true, msg: \"user created\" }", 201)
         # return render_template('/uploading.html')
-    return make_response("{success: false}", 300)
+    return make_response("{success: false, error: \"net Error\" }", 408)
 
 
 @blueprint.route('/upload', methods=['POST'])
@@ -57,7 +57,7 @@ def upload():
     if user is None:
         ################### some http status
         # user not existed
-        return
+        return make_response("{ success: false, error: \"user doesn't exist\" }", 401)
     else :
         correctPwd = user[1]
         salt = user[2]
@@ -65,18 +65,18 @@ def upload():
         if correctPwd != encPwd:
             ################### some http status
             # password not matched
-            return
+            return make_response("{ success: false, error: \"wrong password\" }", 401)
 
 
     if file:
         filename = file.filename
         if filename == '':
             ################### some http status
-            return
+            return make_response("{ success: false, error: \"filename is needed\" }", 400)
 
         if not allowed_file(filename):
             ################### some http status
-            return
+            return make_response("{ success: false, error: \"bad file\" }", 400)
         else:
             # Save to S3
             s3 = boto3.resource('s3')
@@ -93,7 +93,7 @@ def upload():
             if os.path.getsize(filepath) > 50*1024*1024:
                 sizeError = "The file size is larger than limit."
                 ################### some http status
-                return
+                return make_response("{ success: false, error: \"file is too large\" }", 400)
 
             # here we need to change the other two to right files
             with open(filepath, 'rb') as tmp:
@@ -115,6 +115,8 @@ def upload():
             cnx.commit()
 
             ################### some http status
-            return make_response("{success: true}", 200)
+            return make_response("{success: true, msg: \"upload successfully\" }", 200)
+    else: 
+        return make_response("{ success: false, error: \"file is needed\" }", 400)
 
-    return make_response("{success: false}", 404)
+    return make_response("{success: false, error: \"net Error\" }", 408)

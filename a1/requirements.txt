@@ -1,0 +1,9 @@
+Flask==1.1.1
+botocore==1.12.246
+Pillow==6.2.0
+boto3==1.9.250
+flask_bootstrap==3.3.7.1
+flask_uploads==0.2.1
+flask_wtf==0.14.2
+mysql_connector_repackaged==0.3.1
+WTForms==2.2.1
