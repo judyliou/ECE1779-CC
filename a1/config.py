@@ -11,13 +11,13 @@ S3_BUCKET = 'ece1779-junbang-a1'
 # S3_SECRET = os.environ.get("S3_SECRET_ACCESS_KEY")
 # S3_LOCATION = 'http://{}.s3.amazonaws.com/'.format(S3_BUCKET)
 
-# db_config = {'user': 'ece1779', 
-#              'password': 'secret',
-#              'host': '127.0.0.1',
-#              'database': 'ece1779'}
-
-# change!
 db_config = {'user': 'root',
              'password': '3263025++',
              'host': '127.0.0.1',
              'database': 'newdb'}
+
+# change!
+# db_config = {'user': 'root',
+#              'password': 'ece1779pass',
+#              'host': '127.0.0.1',
+#              'database': 'a1'}

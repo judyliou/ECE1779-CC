@@ -6,7 +6,7 @@ from flask import Blueprint
 
 from app.upload import allowed_file
 from app.utils import *
-from config import S3_BUCKET
+ 
 
 blueprint = Blueprint('api', __name__)
 @blueprint.route('/register', methods=['POST'])
