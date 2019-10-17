@@ -105,7 +105,7 @@ def upload():
 
             ##################### TO DO ######################
             # 1. text detection                              #
-            # 2. save the result and thumbnail of the result #                              #
+            # 2. save the result and thumbnail of the result #
             ##################################################
 
             # a function to create 3 key names
