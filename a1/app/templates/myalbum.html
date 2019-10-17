@@ -29,21 +29,17 @@
     <button type="button" class="btn btnBlock"><a href="/upload">Upload New Photo</a></button>
     <br><br>
 
+
     <div class="imageList">
         {% for url in urls %}
             <div class="imageBlock">
-                <img src="{{ url[0] }}" class="img-thumbnail listImage">
+                <a href="{{ url_for('viewImage', key=url[1]) }}">
+                    <img src="{{ url[0] }}" class="img-thumbnail listImage">
+                </a>
                 <a class="imgLabel" href="{{ url_for('viewImage', key=url[1]) }}">{{ url[2] }}</a>
             </div>
 
         {% endfor %}
     </div>
-    <!-- {% for url_row in urls | batch(3, '&nbsp;') %}
-    <div class="row">
-        {% for urls in url_row %}
-        <img src="{{ url }}" class="img-thumbnail">
-        {% endfor %}
-    </div>
-    {% endfor %} -->
 
 {% endblock %}

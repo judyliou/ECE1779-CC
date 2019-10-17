@@ -1,0 +1,11 @@
+flask
+flask-bootstrap
+flask-wtf
+flask-uploads
+pillow
+mysql-connector
+boto3
+imutils
+numpy
+opencv-python
+gunicorn

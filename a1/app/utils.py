@@ -89,4 +89,4 @@ def normalName(name):
     """
 
     nameParts = name.split("##")
-    return "##".join(nameParts[0:len(nameParts) - 1])
+    return "##".join(nameParts[0:len(nameParts) - 1]).split('_')[1]
