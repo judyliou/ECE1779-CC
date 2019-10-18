@@ -29,6 +29,8 @@ def go_album():
         urls = []
         for key in thumbnails:
             normName = normalName(key)
+            user_len = len(session.get('username'))
+            normName = normName[user_len+1: ]
             url = url_for('static', filename='uploads/'+key)
             urls.append([url, key, normName])
         return render_template('myalbum.html', urls=urls)
@@ -56,7 +58,12 @@ def upload():
         if not allowed_file(filename):
             flash('Only image files allowed!', 'warning')
             return render_template("upload.html") 
-        else:            
+        else: 
+            if os.fstat(file.fileno()).st_size > 50*1024*1024:
+                # if os.path.getsize(file.path) > 1*1024:
+                sizeError = "The file size is larger than limit."
+                return render_template('upload.html', sizeError=sizeError)
+
             # keys generated here
             # (key0: original photo/key1: text-detected photo/key2: thumbnail)
             key = username + '_' + filename
