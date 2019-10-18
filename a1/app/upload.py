@@ -29,6 +29,8 @@ def go_album():
         urls = []
         for key in thumbnails:
             normName = normalName(key)
+            user_len = len(session.get('username'))
+            normName = normName[user_len+1: ]
             url = url_for('static', filename='uploads/'+key)
             urls.append([url, key, normName])
         return render_template('myalbum.html', urls=urls)
