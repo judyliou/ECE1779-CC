@@ -16,7 +16,7 @@ def index():
     if session.get('username') is not None:
         is_login = True
         username = session.get('username')
-    return render_template('base.html', is_login=is_login, username=username)  ##### change to main page
+    return render_template('base.html', is_login=is_login, username=username) 
 
 
 @webapp.route('/register', methods=['GET', 'POST'])
@@ -44,7 +44,9 @@ def register():
         cnx = get_db()
         cursor = cnx.cursor()
 
-        encPwd = encryptString(password)
+        # here salt is created
+        salt = randomString(12)
+        encPwd = encryptString(password + salt)
 
         query = '''SELECT * FROM users WHERE userID = %s'''
         cursor.execute(query, (username,))
@@ -52,8 +54,8 @@ def register():
             flash('The username is used.', 'warning')
             return redirect(url_for('register'))  # not sure
         else:
-            query = '''INSERT INTO users (userID, password) VALUES (%s, %s)'''
-            cursor.execute(query, (username, encPwd))
+            query = '''INSERT INTO users (userID, password, salt) VALUES (%s, %s, %s)'''
+            cursor.execute(query, (username, encPwd, salt))
             cnx.commit()
             flash('Registration Success! Please login.', 'success')
             return redirect(url_for('login'))
@@ -84,8 +86,6 @@ def login():
         cnx = get_db()
         cursor = cnx.cursor()
 
-        encPwd = encryptString(password)
-
         query = '''SELECT * FROM users WHERE userID = %s'''
         cursor.execute(query, (username,))
         user_result = cursor.fetchone()
@@ -94,6 +94,8 @@ def login():
             return redirect(url_for('login'))
         else:
             pwd_db = user_result[1]
+            salt = user_result[2]
+            encPwd = encryptString(password + salt)
             if pwd_db != encPwd:
                 flash('Wrong password!', 'warning')
                 return redirect(url_for('login'))

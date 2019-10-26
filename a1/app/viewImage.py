@@ -1,6 +1,5 @@
 from app import webapp
 from flask import render_template, redirect, url_for
-import boto3
 
 from app.utils import get_db
 
