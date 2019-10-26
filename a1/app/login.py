@@ -16,7 +16,7 @@ def index():
     if session.get('username') is not None:
         is_login = True
         username = session.get('username')
-    return render_template('base.html', is_login=is_login, username=username)  ##### change to main page
+    return render_template('base.html', is_login=is_login, username=username) 
 
 
 @webapp.route('/register', methods=['GET', 'POST'])
