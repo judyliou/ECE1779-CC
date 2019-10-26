@@ -40,22 +40,22 @@ def viewWorker(id):
 
 
     # HTTP request
-    packet_in = client.get_metric_statistics(
+    HTTP_in = client.get_metric_statistics(
         Period=60,
         StartTime = datetime.utcnow() - timedelta(seconds=60*30),
         EndTime = datetime.utcnow(),
         MetricName = 'HTTPRequest',
         NameSpace = 'MyNameSpace',
-        Statistics = ['Sum'],
+        Statistics = ['SampleCount'],
         Dimensions=[{'Name': 'InstanceId', 'Value': id}]
     )
    
     HTTP_stats = []
-    for point in HTTP_stats['Datapoints']:
+    for point in HTTP_in['Datapoints']:
         hour = point['Timestamp'].hour
         minute = point['Timestamp'].minute
         time = hour + minute/60
-        HTTP_stats.append([time, point['Sum']])
+        HTTP_stats.append([time, point['SampleCount']])
     HTTP_stats = sorted(HTTP_stats, key=itemgetter(0))
 
     return render_template("workerInfo.html", 
