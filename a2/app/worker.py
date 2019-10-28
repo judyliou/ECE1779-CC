@@ -4,7 +4,7 @@ import boto3
 from datetime import datetime, timedelta
 from operator import itemgetter
 
-@webapp.route("/workers", method=['GET'])
+@webapp.route("/workers", methods=['GET'])
 # Display list of all workers
 def workerList():
     ec2 = boto3.resource('ec2')

@@ -1,0 +1,29 @@
+<head>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/ui.css') }}">
+    {% extends "bootstrap/base.html" %}
+    {% block title %}Upload{% endblock title %}
+</head>
+
+{% block content %}
+
+    {% for message in get_flashed_messages(with_categories=True) %}
+    <div class="alert alert-{{ message[0] }}">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            {{ message[1] }}
+    </div>
+    {% endfor %}
+
+    {% if sizeError != null %}
+        <p class="sizeError"> {{ sizeError }} </p>
+    {% endif %}
+
+    <form action="/upload_submit" enctype="multipart/form-data" method="post">
+        Select a photo <br><br>
+        <input type="file" name="uploadedfile">
+        <br>
+        <input type="submit" value="Upload">
+        <input type="reset">
+    </form>
+    <br>
+    <button type="button" class="btn"><a href="/index">Back to Home Page</a></button>
+{% endblock %}
