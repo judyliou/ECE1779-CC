@@ -30,6 +30,7 @@ def register():
     falsh a warning and ask the user to register again.
     
     """
+    put_http_metric(session['worker_id'])
     form = RegisterForm()
     username = request.form.get('username')
     password = request.form.get('password')
@@ -75,6 +76,7 @@ def login():
     password again.
 
     """
+    put_http_metric(session['worker_id'])
     form = LoginForm()
     username = request.form.get('username')
     password = request.form.get('password')

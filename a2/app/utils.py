@@ -85,8 +85,7 @@ def randomString(length):
     print(result)
     return result
 
-
-def put_HTTP_metric(id):
+def put_http_metric(id):
     client = boto3.client('cloudwatch')
     response = client.put_metric_data(
         Namespace='MyNameSpace',

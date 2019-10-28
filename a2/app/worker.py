@@ -40,7 +40,7 @@ def viewWorker(id):
 
 
     # HTTP request
-    HTTP_in = client.get_metric_statistics(
+    http_in = client.get_metric_statistics(
         Period=60,
         StartTime = datetime.utcnow() - timedelta(seconds=60*30),
         EndTime = datetime.utcnow(),
@@ -50,16 +50,16 @@ def viewWorker(id):
         Dimensions=[{'Name': 'InstanceId', 'Value': id}]
     )
    
-    HTTP_stats = []
-    for point in HTTP_in['Datapoints']:
+    http_stats = []
+    for point in http_in['Datapoints']:
         hour = point['Timestamp'].hour
         minute = point['Timestamp'].minute
         time = hour + minute/60
-        HTTP_stats.append([time, point['SampleCount']])
-    HTTP_stats = sorted(HTTP_stats, key=itemgetter(0))
+        http_stats.append([time, point['SampleCount']])
+    http_stats = sorted(http_stats, key=itemgetter(0))
 
     return render_template("workerInfo.html", 
                             worker=id,   
                             instance=instance,
                             cpu_stats=cpu_stats,
-                            HTTP_stats=HTTP_stats)
+                            HTTP_stats=http_stats)
