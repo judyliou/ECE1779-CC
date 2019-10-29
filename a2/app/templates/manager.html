@@ -1,7 +1,26 @@
+<html>
+
 <head>
-    <title> manager app </title>
-</head>
-<body>
-    <a href="{{ url_for('viewWorker', index='1') }}"> worker 1 </a>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/ui.css') }}">
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="static/js/manager.js"></script>
     
-</body>
+    {% extends "bootstrap/base.html" %}
+    {% block title %} manager app {% endblock title %}
+</head>
+
+{% block content %}
+<p>Hello</p>
+{% for instance in instances %}
+<tr>
+    <td>{{ instance.id }}</td>
+    <td>{{ instance.instance_type }}</td>
+    <td>{{ instance.placement['AvailabilityZone']}}</td>
+    <td>{{ instance.state['Name'] }}</td>
+</tr>
+{% endfor %}
+
+<button id="addBtn">Add</button>
+{% endblock %}
+
+</html>
