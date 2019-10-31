@@ -3,6 +3,10 @@ from app import webapp
 import boto3
 from datetime import datetime, timedelta
 from operator import itemgetter
+import time
+
+
+
 
 @webapp.route("/workers", methods=['GET'])
 # Display list of all workers
@@ -16,8 +20,8 @@ def workerList():
 # Display details (CPU utilization and HTTP requests received) of a certain worker
 def viewWorker(id):
     ec2 = boto3.resource('ec2')
-    instance = ec2.instnace(id)
-    client = boto3.client('cloudwatch')
+    instance = ec2.Instance(id)
+    client = boto3.client('cloudwatch', region_name='us-east-1')
 
     # CPU utilization
     cpu = client.get_metric_statistics( 
@@ -25,8 +29,8 @@ def viewWorker(id):
         StartTime = datetime.utcnow() - timedelta(seconds=60*30),
         EndTime = datetime.utcnow(),
         MetricName = 'CPUUtilization',
-        NameSpace = 'AWS/EC2',
-        Statistics = ['Sum'],
+        Namespace = 'AWS/EC2',
+        Statistics = ['Average'],
         Dimensions=[{'Name': 'InstanceId', 'Value': id}]
     )
 
@@ -35,7 +39,7 @@ def viewWorker(id):
         hour = point['Timestamp'].hour
         minute = point['Timestamp'].minute
         time = hour + minute/60
-        cpu_stats.append(time, point['Sum'])
+        cpu_stats.append([time, point['Average']])
     cpu_stats = sorted(cpu_stats, key=itemgetter(0))
 
 
@@ -45,8 +49,8 @@ def viewWorker(id):
         StartTime = datetime.utcnow() - timedelta(seconds=60*30),
         EndTime = datetime.utcnow(),
         MetricName = 'HTTPRequest',
-        NameSpace = 'MyNameSpace',
-        Statistics = ['SampleCount'],
+        Namespace = 'Custom',
+        Statistics = ['Sum'],
         Dimensions=[{'Name': 'InstanceId', 'Value': id}]
     )
    
@@ -55,11 +59,14 @@ def viewWorker(id):
         hour = point['Timestamp'].hour
         minute = point['Timestamp'].minute
         time = hour + minute/60
-        http_stats.append([time, point['SampleCount']])
+        http_stats.append([time, point['Sum']])
     http_stats = sorted(http_stats, key=itemgetter(0))
-
+    print('cpu:', cpu_stats)
+    print('http:', http_stats)
     return render_template("workerInfo.html", 
                             worker=id,   
                             instance=instance,
                             cpu_stats=cpu_stats,
-                            HTTP_stats=http_stats)
+                            http_stats=http_stats)
+
+

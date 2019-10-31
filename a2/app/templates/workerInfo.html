@@ -1,6 +1,6 @@
 {% extends "base1.html" %}
 {% block content %}
-    <form action='{{url_for("worker_list"}}' method='get'>
+    <form action='{{url_for("workerList")}}' method='get'>
         <input type='submit' value='Back'>
     </form>
 
@@ -14,10 +14,10 @@
 
 
     <h2>CPU</h2>
-    <div id='cpu_plot' style='width:300px;height:150px'></div>
+    <div id='cpu_plot' style='width:600px; height:150px'></div>
 
     <h2>HTTP Request</h2>
-    <div id='http_plot' style='width:300px;height:150px'></div>
+    <div id='http_plot' style='width:600px; height:150px'></div>
 
     <script>
         var options = {

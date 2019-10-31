@@ -5,7 +5,7 @@ import cv2
 import os
 
 from text_detection import detect_text
-from app.utils import get_db, keynameFactory, normalName, put_http_metric
+from app.utils import get_db, keynameFactory, normalName
 
 
 def allowed_file(filename):
@@ -38,13 +38,11 @@ def go_album():
 
 @webapp.route('/upload', methods=['GET'])
 def upload_form():
-    put_http_metric(session['worker_id'])
     return render_template("upload.html")
 
 
 @webapp.route('/upload_submit', methods=['POST'])
 def upload():
-    put_http_metric(session['worker_id'])
     username = session.get('username')
     if not 'username': # check whether the user is logged in
         flash('Pleas log in first!', 'warning')

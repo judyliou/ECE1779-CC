@@ -1,12 +1,11 @@
 from app import webapp
-from flask import render_template, redirect, url_for, session
+from flask import render_template, redirect, url_for
 
-from app.utils import get_db, put_http_metric
+from app.utils import get_db
 
 
 @webapp.route("/viewImage/<key>", methods=['GET'])
 def viewImage(key):
-    put_http_metric(session['worker_id'])
     cnx = get_db()
     cursor = cnx.cursor()
 

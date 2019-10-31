@@ -85,27 +85,28 @@ def randomString(length):
     print(result)
     return result
 
-def put_http_metric(id):
-    client = boto3.client('cloudwatch')
-    response = client.put_metric_data(
-        Namespace='MyNameSpace',
-        MetricData=[
-            {
-                'MetricName': 'HTTPRequest',
-                'Dimensions': [
-                    {
-                        'Name': 'InstanceId',
-                        'Value': id,
-                    },
-                ],
-                'Timestamp': datetime.utcnow(),
-                'StatisticValues': {
-                    'SampleCount': 1.0,
-                    'Sum': 1.0,
-                    'Minimum': 1.0,
-                    'Maximum': 1.0
-                },
-                'StorageResolution': 60
-            },
-        ]
-    )
+# def put_http_metric(id):
+#     print('time:', datetime.utcnow())
+#     client = boto3.client('cloudwatch', region_name='us-east-1')
+#     response = client.put_metric_data(
+#         Namespace='Mynamespace',
+#         MetricData=[
+#             {
+#                 'MetricName': 'HTTPRequest',
+#                 'Dimensions': [
+#                     {
+#                         'Name': 'InstanceId',
+#                         'Value': id,
+#                     },
+#                 ],
+#                 'Timestamp': datetime.utcnow(),
+#                 'StatisticValues': {
+#                     'SampleCount': 1.0,
+#                     'Sum': 1.0,
+#                     'Minimum': 1.0,
+#                     'Maximum': 1.0
+#                 },
+#                 'StorageResolution': 60
+#             },
+#         ]
+#     )
