@@ -1,26 +1,52 @@
 <html>
 
 <head>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/ui.css') }}">
+    <link rel="stylesheet" type="text/css" href="static/styles/ui.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
     <script src="static/js/manager.js"></script>
-    
-    {% extends "bootstrap/base.html" %}
+
+    {% extends "base.html" %}
     {% block title %} manager app {% endblock title %}
 </head>
 
-{% block content %}
-<p>Hello</p>
-{% for instance in instances %}
-<tr>
-    <td>{{ instance.id }}</td>
-    <td>{{ instance.instance_type }}</td>
-    <td>{{ instance.placement['AvailabilityZone']}}</td>
-    <td>{{ instance.state['Name'] }}</td>
-</tr>
-{% endfor %}
+{% block navbar %}
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">Manager</a>
+</nav>
+{%- endblock navbar %}
 
-<button id="addBtn">Add</button>
+{% block content %}
+<div class="btn-list">
+    <table class="list-table table table-bordered">
+        <thead>
+            <tr>
+                <th>Number</th>
+                <th>ID</th>
+                <th>Port</th>
+                <th>State</th>
+            </tr>
+        </thead>
+        {% for instance in instances %}
+        <tbody>
+            <td>{{ loop.index }}</td>
+            <td>{{ instance.Id }}</td>
+            <td>{{ instance.Port }}</td>
+            <td>{{ instance.State }}</td>
+        </tbody>
+        {% endfor %}
+    </table>
+
+
+    <button id="addBtn" type="button" class="btn btn-outline-success">Add</button>
+    <button id="shrinkBtn" type="button" class="btn btn-outline-primary">Shrink</button>
+    <button id="stopBtn" type="button" class="btn btn-outline-warning">Stop</button>
+    <button id="deleteBtn" type="button" class="btn btn-outline-danger">Delete</button>
+
+</div>
+
+
 {% endblock %}
 
 </html>
