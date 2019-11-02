@@ -61,8 +61,8 @@ def viewWorker(id):
         time = hour + minute/60
         http_stats.append([time, point['Sum']])
     http_stats = sorted(http_stats, key=itemgetter(0))
-    print('cpu:', cpu_stats)
-    print('http:', http_stats)
+    # print('cpu:', cpu_stats)
+    # print('http:', http_stats)
     return render_template("workerInfo.html", 
                             worker=id,   
                             instance=instance,
