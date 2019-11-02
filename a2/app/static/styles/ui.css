@@ -1,0 +1,24 @@
+.list-table {
+    border: 1px solid black;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.btn-list {
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 50px;
+}
+
+.btn {
+    border: 1px solid !important;
+    width: 60px !important;
+    text-align: center;
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+}
+
+.bg-light {
+    background-color: #c1d3e4!important;
+}
