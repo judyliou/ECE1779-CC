@@ -24,8 +24,13 @@
 
         var options = {
             series: {
-                lines: {show: true},
-                points: {show: true}
+                lines: { show: true },
+                points: { show: true }
+            },
+            xaxis: {
+                mode: "time",
+                timeformat: "%H:%M"
+                // tickSize: [5, 'minute']
             }
         };
 

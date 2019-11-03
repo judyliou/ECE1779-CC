@@ -36,9 +36,10 @@ def viewWorker(id):
 
     cpu_stats = []
     for point in cpu['Datapoints']:
-        hour = point['Timestamp'].hour
-        minute = point['Timestamp'].minute
-        time = hour + minute/60
+        # hour = point['Timestamp'].hour
+        # minute = point['Timestamp'].minute
+        # time = hour + minute/60
+        time = point['Timestamp'].timestamp( )*1000
         cpu_stats.append([time, point['Average']])
     cpu_stats = sorted(cpu_stats, key=itemgetter(0))
 
@@ -56,9 +57,10 @@ def viewWorker(id):
    
     http_stats = []
     for point in http_in['Datapoints']:
-        hour = point['Timestamp'].hour
-        minute = point['Timestamp'].minute
-        time = hour + minute/60
+        # hour = point['Timestamp'].hour
+        # minute = point['Timestamp'].minute
+        # time = hour + minute/60
+        time = point['Timestamp'].timestamp( )*1000
         http_stats.append([time, point['Sum']])
     http_stats = sorted(http_stats, key=itemgetter(0))
     # print('cpu:', cpu_stats)
