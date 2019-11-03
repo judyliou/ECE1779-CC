@@ -5,6 +5,8 @@
 """
 
 ####### Junbang's config #######
-imageID = "ami-097f8fcf35ceff42e"
+imageId = "ami-0504cab097c420742"
 arn = "arn:aws:elasticloadbalancing:us-east-1:350581778973:targetgroup/imageGroup/05ccba24a0a8b376"
 workerTag = {"key": "type", "value": "worker"}
+keypair = "ece1779"
+securityGroup = "launch-wizard-1"

@@ -1,4 +1,5 @@
 import boto3
+import time
 
 from app.config import awsConfig
 
@@ -13,22 +14,24 @@ class AWSSuite:
     """
     def getAllWorkers(self):
         instances = []
+        tagName = str("tag:" + awsConfig.workerTag['key'])
         insFilter = [{
-            'Name': 'tag:type',
+            'Name': tagName,
             'Values': [awsConfig.workerTag['value']]
         }]
         response = self.ec2.describe_instances(Filters=insFilter)
-        # print(response)
         results = response['Reservations']
         for result in results:
             if len(result['Instances']) > 0:
-                instances.append({
-                    'Id':
-                    result['Instances'][0]['InstanceId'],
-                    'State':
-                    result['Instances'][0]['State']['Name'],
-                    #  'Port': 5000
-                })
+                if result['Instances'][0]['State']['Name'] != "terminated":
+                    instances.append({
+                        'Id':
+                        result['Instances'][0]['InstanceId'],
+                        'State':
+                        result['Instances'][0]['State']['Name'],
+                        'Port':
+                        5000
+                    })
         return instances
 
     """
@@ -37,12 +40,28 @@ class AWSSuite:
     """
     def growOneWorker(self):
         uuInstances = self.getUnusedInstances()
-        numUUIns = len(uuInstances)
-        print(numUUIns)
-        if numUUIns == 0:
-            instance = createOneInstance()
+        if not uuInstances:
+            instance = self.createOneInstance()
         # use index of id to identify?
-        instance = uuInstances[0]
+        else:
+            instance = uuInstances[0]
+
+        # here is the problem: new instance needs some time to run,
+        # we need to wait for the start
+        # so we give a loop to inquire state of instance until state is running
+        stateResponse = self.ec2.describe_instance_status(
+            InstanceIds=[instance["Id"]])
+        while len(stateResponse['InstanceStatuses']) < 1:
+            # jesus this is too much waste
+            time.sleep(2)
+            stateResponse = self.ec2.describe_instance_status(
+                InstanceIds=[instance["Id"]])
+        if stateResponse:
+            print(stateResponse)
+            instance = {
+                'Id': stateResponse['InstanceStatuses'][0]['InstanceId'],
+            }
+
         response = self.elb.register_targets(TargetGroupArn=awsConfig.arn,
                                              Targets=[
                                                  {
@@ -51,9 +70,8 @@ class AWSSuite:
                                                  },
                                              ])
         if response and 'ResponseMetadata' in response:
-            print(response)
             return True
-        # a response verify needed here    
+        # a response verify needed here
         return -1
 
     """
@@ -80,7 +98,6 @@ class AWSSuite:
     def getWorkingInstances(self):
         response = self.elb.describe_target_health(
             TargetGroupArn=awsConfig.arn, )
-        # print(response)
         instances = []
         if 'TargetHealthDescriptions' in response:
             for target in response['TargetHealthDescriptions']:
@@ -96,7 +113,34 @@ class AWSSuite:
     match image, keypair, *securitygroup, port, *type=worker
     """
     def createOneInstance(self):
-        instance = null
+        tagName = str("tag:" + awsConfig.workerTag['key'])
+        response = self.ec2.run_instances(
+            ImageId=awsConfig.imageId,
+            KeyName=awsConfig.keypair,
+            SecurityGroups=[awsConfig.securityGroup],
+            TagSpecifications=[
+                {
+                    'ResourceType':
+                    'instance',
+                    'Tags': [
+                        {
+                            'Key': awsConfig.workerTag['key'],
+                            'Value': awsConfig.workerTag['value']
+                        },
+                    ]
+                },
+            ],
+            MaxCount=1,
+            MinCount=1,
+            InstanceType='t2.micro')
+        instance = None
+        if 'Instances' in response and len(response['Instances']) > 0:
+            instance = {
+                "Id": response['Instances'][0]['InstanceId'],
+                'Port': 5000,
+                'State': response['Instances'][0]['State']['Name']
+            }
+        print(instance)
         return instance
 
     """
@@ -110,15 +154,16 @@ class AWSSuite:
         # use index of id to identify?
         workerToShrink = workingInstances[0]
         response = self.elb.deregister_targets(TargetGroupArn=awsConfig.arn,
-                                             Targets=[
-                                                 {
-                                                     'Id': workerToShrink['Id'],
-                                                     'Port': 5000,
-                                                 },
-                                             ])
+                                               Targets=[
+                                                   {
+                                                       'Id':
+                                                       workerToShrink['Id'],
+                                                       'Port': 5000,
+                                                   },
+                                               ])
         # deregister the instance
         if response and 'ResponseMetadata' in response:
-            print("response: " + response)
+            print(response)
         return True
 
     def stopAllInstances(self):
