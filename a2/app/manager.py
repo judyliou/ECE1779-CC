@@ -31,6 +31,8 @@ def add():
 @webapp.route('/shrink', methods=['GET', 'POST'])
 def shrink():
     response = awsSuite.shrinkOneWorker()
+    # response = awsSuite.shrinkWorkers(3)
+    # return json.dumps({'success': 0, "msg": str(response)})
     if response == awsConfig.DEREGISTERED:
         return json.dumps({'success': 1, "msg": 'success'})
     elif response == awsConfig.NO_WORKER:
@@ -40,4 +42,11 @@ def shrink():
 
 @webapp.route('/stop', methods=['GET', 'POST'])
 def stop():
-    return True
+    response = awsSuite.stopAllInstances()
+    if response == awsConfig.ALL_STOPED:
+        msg = "All instances successfully stopped"
+    else:
+        msg = "Some instances not successfully stopped due to network error"
+    return render_template('stopped.html', msg=msg)
+    # return json.dumps({'success': 1, 'msg': msg})
+    # return json.dumps(dict(redirect='stopped.html'))

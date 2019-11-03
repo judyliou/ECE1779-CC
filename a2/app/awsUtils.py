@@ -213,5 +213,37 @@ class AWSSuite:
             return awsConfig.DEREGISTERED
         return awsConfig.DEREGISTER_FAILED
 
+    """
+    shrink workers by number
+    return: json object
+        {
+            'number': # instances deregistered,
+            'msg': result message
+        }
+    """
+    def shrinkWorkers(self, num):
+        successNum = 0
+        for i in range(num):
+            res = self.shrinkOneWorker()
+            successNum += 1
+            if res != awsConfig.DEREGISTERED:
+                return {'number': successNum, 'msg': res}
+        return {'number': successNum, 'msg': awsConfig.DEREGISTERED}
+
+    """
+    this is ambiguous: after stopping, manually run every instance would
+    be the only option to let the elb run as the same. 'cause it's doesn't
+    make sense to start every instance from manager itself
+    """
     def stopAllInstances(self):
-        return null
+        instances = self.getAllWorkers()
+        instancesIds = []
+        for instance in instances:
+            instancesIds.append(instance["Id"])
+        response = self.ec2.stop_instances(
+            InstanceIds = instancesIds
+        )
+        if response and 'StoppingInstances' in response:
+            if len(response['StoppingInstances']) == len(instancesIds):
+                return awsConfig.ALL_STOPED
+        return awsConfig.STOP_FAILED

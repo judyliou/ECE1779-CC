@@ -87,5 +87,17 @@ function stopAll() {
     area = document.getElementById('stopBtn')
     loadingArea = getLoading();
     area.appendChild(loadingArea)
-    console.log("it's your choice to stop all")
+    alert("it's your choice to stop all")
+    window.location.href = "/stop";
+    // $.ajax({
+    //     type: 'POST',
+    //     url: '/stop',
+    //     data: '',
+    //     contentType: false,
+    //     success: function(data) {
+    //         console.log(data)
+    //         let res = JSON.parse(data)
+    //         window.location.href = res.redirect;
+    //     }
+    // })
 }
