@@ -5,9 +5,6 @@ from app.forms import RegisterForm, LoginForm
 from app.utils import *
 from app import webapp
 
-bootstrap = Bootstrap(webapp)
-
-
 
 @webapp.route('/')
 @webapp.route('/index')

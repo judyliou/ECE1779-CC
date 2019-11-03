@@ -40,7 +40,7 @@ class AWSSuite:
         numUUIns = len(uuInstances)
         print(numUUIns)
         if numUUIns == 0:
-            instance = createOneInstance()
+            instance = self.createOneInstance()
         # use index of id to identify?
         instance = uuInstances[0]
         response = self.elb.register_targets(TargetGroupArn=awsConfig.arn,
@@ -96,7 +96,7 @@ class AWSSuite:
     match image, keypair, *securitygroup, port, *type=worker
     """
     def createOneInstance(self):
-        instance = null
+        instance = None
         return instance
 
     """
@@ -106,7 +106,7 @@ class AWSSuite:
     def shrinkOneWorker(self):
         workingInstances = self.getWorkingInstances()
         if not workingInstances:
-            return false
+            return False
         # use index of id to identify?
         workerToShrink = workingInstances[0]
         response = self.elb.deregister_targets(TargetGroupArn=awsConfig.arn,
@@ -122,4 +122,4 @@ class AWSSuite:
         return True
 
     def stopAllInstances(self):
-        return null
+        return None

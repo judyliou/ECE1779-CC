@@ -21,51 +21,17 @@
 
     
     <script type='text/javascript'>
-    // $(function () {
-    //     var now = new Date().getTime();
+
         var options = {
             series: {
                 lines: {show: true},
                 points: {show: true}
             }
-            // xaxis: {
-            //     mode: "time",
-            //     tickSize: [60, "second"],
-            //     // timeformat: "%H:%M"
-            //     // tickFormatter: function(v, axis) {
-            //     //     var date = new Date(v);
-
-            //     //     if (date.getSeconds() % 20 == 0) {
-            //     //         var hours = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
-            //     //         var minutes = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
-            //     //         var seconds = date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
-
-            //     //         return hours + ":" + minutes + ":" + seconds;
-            //     //     } else {
-            //     //         return "";
-            //     //     }
-            //     // }
-            // }
         };
 
         $.plot($("#cpu_plot"), [ {{ cpu_stats }} ], options);
         $.plot($("#http_plot"), [ {{ http_stats }} ], options);
-    
-        // var updateInterval = 60000;
-        // var cpu_plot = $.plot($("#cpu_plot"), [ {{ cpu_stats }} ], options);
-        // var http_plot = $.plot($("#http_plot"), [ {{ http_stats }} ], options);
 
-        // function update() {
-        //     cpu_plot.setData([ {{ cpu_stats }} ]);
-        //     http_plot.setData([ {{ http_stats }} ]);
-        //     // since the axes don't change, we don't need to call plot.setupGrid()
-        //     cpu_plot.draw();
-        //     http_plot.draw();
-            
-        //     setTimeout(update, updateInterval);
-        // }
-        // update();
-    // });
        
     </script>
     
