@@ -45,6 +45,11 @@ function addInstance() {
         data: '',
         contentType: false,
         success: function(data) {
+            console.log(data)
+            let res = JSON.parse(data)
+            if(res.success != 1) {
+                alert(res.msg)
+            }
             location.reload();
         }
     });
@@ -60,6 +65,11 @@ function shrinkInstance() {
         data: '',
         contentType: false,
         success: function(data) {
+            console.log(data)
+            let res = JSON.parse(data)
+            if(res.success != 1) {
+                alert(res.msg)
+            }
             location.reload();
         }
     })
