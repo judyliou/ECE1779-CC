@@ -23,37 +23,59 @@ $(document).ready(function() {
     })
 })
 
+function refresh() {
+    location.reload();
+}
+
+function getLoading() {
+    loadingArea = document.createElement('span')
+    loadingArea.setAttribute('role', 'status')
+    loadingArea.setAttribute('class', 'spinner-border spinner-border-sm')
+    return loadingArea
+}
+
 function addInstance() {
-    console.log("add one")
+    area = document.getElementById('addBtn')
+    // loadingArea = document.createElement('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>')
+    loadingArea = getLoading()
+    area.appendChild(loadingArea)    
     $.ajax({
         type: 'POST',
         url: '/add',
         data: '',
         contentType: false,
         success: function(data) {
-            data = JSON.parse(data)
-            console.log(data)
+            location.reload();
         }
     });
 }
 
 function shrinkInstance() {
-    console.log("shrink one")
+    area = document.getElementById('shrinkBtn')
+    loadingArea = getLoading();
+    area.appendChild(loadingArea)
     $.ajax({
         type: 'POST',
         url: '/shrink',
         data: '',
         contentType: false,
         success: function(data) {
-            
+            location.reload();
         }
     })
 }
 
 function deleteAll() {
+    area = document.getElementById('deleteBtn')
+    loadingArea = getLoading();
+    area.appendChild(loadingArea)
     console.log("it's your choice to delete all")
+    location.reload();
 }
 
 function stopAll() {
+    area = document.getElementById('stopBtn')
+    loadingArea = getLoading();
+    area.appendChild(loadingArea)
     console.log("it's your choice to stop all")
 }
