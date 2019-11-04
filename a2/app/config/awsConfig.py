@@ -16,5 +16,5 @@
 imageId = "ami-0504cab097c420742"
 arn = "arn:aws:elasticloadbalancing:us-east-1:735141600372:targetgroup/a1group/bb2f4c7ebd44cf9b"
 workerTag = {"key": "type", "value": "worker"}
-keypair = "ece1779"
-securityGroup = "launch-wizard-1"
+keypair = "ece1779_a1"
+securityGroup = "launch-wizard-3"

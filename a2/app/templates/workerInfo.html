@@ -33,11 +33,11 @@
                 // tickSize: [5, 'minute']
             }
         };
-
+        
+       
         $.plot($("#cpu_plot"), [ {{ cpu_stats }} ], options);
         $.plot($("#http_plot"), [ {{ http_stats }} ], options);
-
-       
+    
     </script>
     
 {% endblock %}
