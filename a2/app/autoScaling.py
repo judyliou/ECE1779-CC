@@ -4,7 +4,7 @@ import threading
 
 from app.utils import *
 from app import awsUtils
-from config import awsConfig
+from app.config import awsConfig
 
 awsSuite = awsUtils.AWSSuite()
 cloudwatch = boto3.client('cloudwatch')
@@ -12,7 +12,7 @@ cloudwatch = boto3.client('cloudwatch')
 
 def fetch_policy():
     # connect to DB and access the auto-scaling configure
-    cnx = get_db()
+    cnx = connect_to_database()
     cursor = cnx.cursor()
     query = '''SELECT * FROM auto_config LIMIT 1''' 
     cursor.execute(query)
@@ -25,12 +25,6 @@ def check_status(flag):
     ratio, threshold_high, threshold_low = fetch_policy()
 
     # get CPU data
-    tagName = str("tag:" + awsConfig.workerTag['key'])
-    insFilter = [{
-        'Name': tagName,
-        'Values': [awsConfig.workerTag['value']]
-    }]
-    
     cpu = cloudwatch.get_metric_statistics( 
         Period=60,
         StartTime = datetime.utcnow() - timedelta(seconds=60*2),
@@ -38,17 +32,18 @@ def check_status(flag):
         MetricName = 'CPUUtilization',
         Namespace = 'AWS/EC2',
         Statistics = ['Average'],
-        Dimensions= insFilter
+        Dimensions= [{'Name': 'ImageId', 'Value': awsConfig.imageId}]
     )
     cpu_record = []
+    print('cpu data point:', len(cpu['Datapoints']))
     for point in cpu['Datapoints']:
         cpu_record.append(point['Average'])
+    avg_CPU = sum(cpu_record)/len(cpu_record)
+    print(avg_CPU)
 
     # check wether over the threshold
     if flag == 0:
-        print(0)
         num_workers = awsSuite.getWorkersNum()
-        avg_CPU = sum(cpu_record)/len(cpu_record)
         if avg_CPU >= threshold_high:
             print('over threshold')
             num_new_workers = num_workers * (ratio - 1)
@@ -60,8 +55,8 @@ def check_status(flag):
             awsSuite.shrinkWorkers(num_new_workers)
             flag = 1
     else:  # still creating/deleting instances
-        print(1)
         if avg_CPU < threshold_high and avg_CPU > threshold_low:
+            print('set flag back to 0')
             flag = 0
 
     # Set a timer for checking every two minutes
