@@ -20,25 +20,23 @@ def index():
 def add():
     response = awsSuite.growOneWorker()
     if response == awsConfig.REGISTERED:
-        return json.dumps({'success': 1, "msg": 'success'})
+        return json.dumps({'success': 1, "msg": 'Success'})
     elif response == awsConfig.MAX_WORKERS:
-        return json.dumps({'success': 0, "msg": 'instances exceed 10'})
+        return json.dumps({'success': 0, "msg": 'Instances exceed 10'})
     elif response == awsConfig.CREATE_FAILED:
-        return json.dumps({'success': 0, "msg": 'failed to create an instance'})
+        return json.dumps({'success': 0, "msg": 'Failed to create an instance'})
     else:
-        return json.dumps({'success': 0, "msg": 'network error'})
+        return json.dumps({'success': 0, "msg": 'Network error'})
 
 @webapp.route('/shrink', methods=['GET', 'POST'])
 def shrink():
     response = awsSuite.shrinkOneWorker()
-    # response = awsSuite.shrinkWorkers(3)
-    # return json.dumps({'success': 0, "msg": str(response)})
     if response == awsConfig.DEREGISTERED:
-        return json.dumps({'success': 1, "msg": 'success'})
+        return json.dumps({'success': 1, "msg": 'Success'})
     elif response == awsConfig.NO_WORKER:
-        return json.dumps({'success': 0, "msg": 'no worker to shrink'})
+        return json.dumps({'success': 0, "msg": 'No worker to shrink'})
     else:
-        return json.dumps({'success': 0, "msg": 'network error'})
+        return json.dumps({'success': 0, "msg": 'Network error'})
 
 @webapp.route('/stop', methods=['GET', 'POST'])
 def stop():
@@ -52,5 +50,5 @@ def stop():
 @webapp.route('/delete', methods=['GET', 'POST'])
 def delete():
     response = awsSuite.deleteAll()
-    return json.dumps({'success': 1, "msg": 'delete successfully'})
+    return json.dumps({'success': 1, "msg": 'Delete successfully'})
     

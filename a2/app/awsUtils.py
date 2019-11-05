@@ -53,7 +53,6 @@ class AWSSuite:
         if len(workingWorkers) >= awsConfig.MAX_INSTANCES:
             return awsConfig.MAX_WORKERS
         uuInstances = self.getUnusedInstances()
-        print(uuInstances)
         if not uuInstances:
             instance = self.createOneInstance()
         else:
@@ -267,7 +266,6 @@ class AWSSuite:
     """
     def deleteAllFromS3(self):
         objList = self.s3.list_objects(Bucket=awsConfig.s3Bucket)
-        print(objList)
         if objList and 'Contents' in objList:
             for key in objList['Contents']:
                 self.deleteImage(key['Key'])        
@@ -280,7 +278,6 @@ class AWSSuite:
             Bucket = awsConfig.s3Bucket,
             Key = key,
         )
-        print('delete: ' + key)
 
     """
     truncate two tables in database: users and photos

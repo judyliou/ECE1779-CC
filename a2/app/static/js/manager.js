@@ -3,29 +3,21 @@ $(document).ready(function() {
     console.log("caonima, ready")
 
     $('#addBtn').on("click", function() {
-        console.log("add onclick")
         addInstance()
     });
 
     $('#shrinkBtn').on("click", function() {
-        console.log("shrink onclick")
         shrinkInstance()
     })
 
     $('#deleteBtn').on("click", function() {
-        console.log("delete onclick")
         deleteAll()
     })
 
     $('#stopBtn').on("click", function() {
-        console.log("stop onclick")
         stopAll()
     })
 })
-
-function refresh() {
-    location.reload();
-}
 
 function getLoading() {
     loadingArea = document.createElement('span')
@@ -36,7 +28,6 @@ function getLoading() {
 
 function addInstance() {
     area = document.getElementById('addBtn')
-    // loadingArea = document.createElement('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>')
     loadingArea = getLoading()
     area.appendChild(loadingArea)    
     $.ajax({
@@ -45,7 +36,6 @@ function addInstance() {
         data: '',
         contentType: false,
         success: function(data) {
-            console.log(data)
             let res = JSON.parse(data)
             if(res.success != 1) {
                 alert(res.msg)
@@ -65,7 +55,6 @@ function shrinkInstance() {
         data: '',
         contentType: false,
         success: function(data) {
-            console.log(data)
             let res = JSON.parse(data)
             if(res.success != 1) {
                 alert(res.msg)
@@ -86,7 +75,7 @@ function deleteAll() {
         data: '',
         contentType: false,
         success: function(data) {
-            alert("delete succeeded")
+            alert("delete successfully")
             location.reload();
         }
     })
@@ -98,15 +87,4 @@ function stopAll() {
     area.appendChild(loadingArea)
     alert("it's your choice to stop all")
     window.location.href = "/stop";
-    // $.ajax({
-    //     type: 'POST',
-    //     url: '/stop',
-    //     data: '',
-    //     contentType: false,
-    //     success: function(data) {
-    //         console.log(data)
-    //         let res = JSON.parse(data)
-    //         window.location.href = res.redirect;
-    //     }
-    // })
 }
