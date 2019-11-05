@@ -1,6 +1,8 @@
 import boto3
 import time
 import json
+from flask import g
+import mysql.connector
 
 from app.config import awsConfig
 
@@ -9,6 +11,7 @@ class AWSSuite:
     def __init__(self):
         self.ec2 = boto3.client('ec2')
         self.elb = boto3.client('elbv2')
+        self.s3 = boto3.client('s3')
 
     """
     retrieve all instances from ec2
@@ -47,7 +50,7 @@ class AWSSuite:
     def growOneWorker(self):
         # check number of working workers
         workingWorkers = self.getWorkingInstances()
-        if len(workingWorkers) >= 4:
+        if len(workingWorkers) >= awsConfig.MAX_INSTANCES:
             return awsConfig.MAX_WORKERS
         uuInstances = self.getUnusedInstances()
         print(uuInstances)
@@ -247,3 +250,59 @@ class AWSSuite:
             if len(response['StoppingInstances']) == len(instancesIds):
                 return awsConfig.ALL_STOPED
         return awsConfig.STOP_FAILED
+    
+    """
+    delete all objects in s3 and truncate all tables
+    return: message flag
+    """
+    def deleteAll(self):
+        # delete all in s3
+        self.deleteAllFromS3()
+        # truncate data from rds
+        self.truncateAllTables()
+        return True
+
+    """
+    delete all objects in s3
+    """
+    def deleteAllFromS3(self):
+        objList = self.s3.list_objects(Bucket=awsConfig.s3Bucket)
+        print(objList)
+        if objList and 'Contents' in objList:
+            for key in objList['Contents']:
+                self.deleteImage(key['Key'])        
+
+    """
+    delete one file in s3
+    """
+    def deleteImage(self, key):
+        self.s3.delete_object(
+            Bucket = awsConfig.s3Bucket,
+            Key = key,
+        )
+        print('delete: ' + key)
+
+    """
+    truncate two tables in database: users and photos
+    """
+    def truncateAllTables(self):
+        cnx = self.get_db()
+        cursor = cnx.cursor()
+        truncateUsers = '''truncate table users'''
+        truncatePhotos = '''truncate table photos'''
+        cursor.execute(truncateUsers, )
+        cursor.execute(truncatePhotos, )
+        cnx.commit()
+
+    def connect_to_database(self):
+        return mysql.connector.connect(user=awsConfig.dbConfig['user'],
+                                    password=awsConfig.dbConfig['password'],
+                                    host=awsConfig.dbConfig['host'],
+                                    database=awsConfig.dbConfig['database'])
+
+
+    def get_db(self):
+        db = getattr(g, '_database', None)
+        if db is None:
+            db = g._database = self.connect_to_database()
+        return db

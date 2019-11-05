@@ -79,8 +79,17 @@ function deleteAll() {
     area = document.getElementById('deleteBtn')
     loadingArea = getLoading();
     area.appendChild(loadingArea)
-    console.log("it's your choice to delete all")
-    location.reload();
+    alert("it's your choice to delete all")
+    $.ajax({
+        type: 'POST',
+        url: '/delete',
+        data: '',
+        contentType: false,
+        success: function(data) {
+            alert("delete succeeded")
+            location.reload();
+        }
+    })
 }
 
 function stopAll() {

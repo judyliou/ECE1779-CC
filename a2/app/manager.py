@@ -48,5 +48,9 @@ def stop():
     else:
         msg = "Some instances not successfully stopped due to network error"
     return render_template('stopped.html', msg=msg)
-    # return json.dumps({'success': 1, 'msg': msg})
-    # return json.dumps(dict(redirect='stopped.html'))
+
+@webapp.route('/delete', methods=['GET', 'POST'])
+def delete():
+    response = awsSuite.deleteAll()
+    return json.dumps({'success': 1, "msg": 'delete successfully'})
+    
