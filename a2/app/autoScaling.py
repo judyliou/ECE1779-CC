@@ -46,17 +46,21 @@ def check_status(flag):
 
     # check wether over the threshold
     if flag == 0:
+        print(0)
         num_workers = awsSuite.getWorkersNum()
         avg_CPU = sum(cpu_record)/len(cpu_record)
         if avg_CPU >= threshold_high:
+            print('over threshold')
             num_new_workers = num_workers * (ratio - 1)
             awsSuite.growWorkers(num_new_workers)
             flag = 1
         elif avg_CPU <= threshold_low:
+            print('under threshold')
             num_new_workers = int(num_workers * (ratio - 1))
             awsSuite.shrinkWorkers(num_new_workers)
             flag = 1
     else:  # still creating/deleting instances
+        print(1)
         if avg_CPU < threshold_high and avg_CPU > threshold_low:
             flag = 0
 
