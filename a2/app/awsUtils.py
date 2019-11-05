@@ -209,6 +209,7 @@ class AWSSuite:
         workingInstances = self.getWorkingInstances()
         if not workingInstances:
             return awsConfig.NO_WORKER
+
         # use index of id to identify?
         workerToShrink = workingInstances[0]
         response = self.elb.deregister_targets(
