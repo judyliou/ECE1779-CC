@@ -1,5 +1,6 @@
 .list-table {
     border: 1px solid black;
+    margin-top: 10px;
     margin-left: auto;
     margin-right: auto;
 }
@@ -21,4 +22,8 @@
 
 .bg-light {
     background-color: #c1d3e4!important;
+}
+
+.elb-url {
+    font-size: 20px;
 }
