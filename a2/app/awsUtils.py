@@ -197,11 +197,8 @@ class AWSSuite:
     def shrinkOneWorker(self):
         workingInstances = self.getWorkingInstances()
         if not workingInstances:
-<<<<<<< HEAD
-            return False
-=======
             return awsConfig.NO_WORKER
->>>>>>> 99c157484dd051a1fc5564b29ed4acfb579cdec6
+
         # use index of id to identify?
         workerToShrink = workingInstances[0]
         response = self.elb.deregister_targets(
@@ -240,9 +237,6 @@ class AWSSuite:
     make sense to start every instance from manager itself
     """
     def stopAllInstances(self):
-<<<<<<< HEAD
-        return None
-=======
         instances = self.getAllWorkers()
         instancesIds = []
         for instance in instances:
@@ -254,4 +248,3 @@ class AWSSuite:
             if len(response['StoppingInstances']) == len(instancesIds):
                 return awsConfig.ALL_STOPED
         return awsConfig.STOP_FAILED
->>>>>>> 99c157484dd051a1fc5564b29ed4acfb579cdec6

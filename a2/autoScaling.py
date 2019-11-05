@@ -4,7 +4,7 @@ import threading
 
 from app.utils import *
 from app import awsUtils
-from config import awsConfig
+from app.config import awsConfig
 
 awsSuite = awsUtils.AWSSuite()
 cloudwatch = boto3.client('cloudwatch')
@@ -12,7 +12,7 @@ cloudwatch = boto3.client('cloudwatch')
 
 def fetch_policy():
     # connect to DB and access the auto-scaling configure
-    cnx = get_db()
+    cnx = connect_to_database()
     cursor = cnx.cursor()
     query = '''SELECT * FROM auto_config LIMIT 1''' 
     cursor.execute(query)
@@ -27,8 +27,8 @@ def check_status(flag):
     # get CPU data
     tagName = str("tag:" + awsConfig.workerTag['key'])
     insFilter = [{
-        'Name': tagName,
-        'Values': [awsConfig.workerTag['value']]
+        'Name': 'type',
+        'Value': 'worker'
     }]
     
     cpu = cloudwatch.get_metric_statistics( 
