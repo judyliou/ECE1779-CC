@@ -9,7 +9,6 @@ CREATE TABLE `users` (
   UNIQUE KEY `userID_UNIQUE` (`userID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
-
 -- key0: filename for original photo
 -- key1: filename for text-detected photo
 -- key2: filename for text-detected thumbnail

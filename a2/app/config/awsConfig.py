@@ -22,7 +22,7 @@ STOP_FAILED = 10008
 MAX_INSTANCES = 4
 
 ####### Junbang's config #######
-imageId = "ami-0504cab097c420742"
+imageId = "ami-00faef86802f615d4"
 grougArn = "arn:aws:elasticloadbalancing:us-east-1:350581778973:targetgroup/imageGroup/05ccba24a0a8b376"
 workerTag = {"key": "type", "value": "worker"}
 keypair = "ece1779"

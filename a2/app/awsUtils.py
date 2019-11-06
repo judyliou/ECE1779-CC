@@ -13,6 +13,17 @@ class AWSSuite:
         self.elb = boto3.client('elbv2')
         self.s3 = boto3.client('s3')
 
+    def getWorkersNum(self):
+        tagName = str("tag:" + awsConfig.workerTag['key'])
+        insFilter = [{
+            'Name': tagName,
+            'Values': [awsConfig.workerTag['value']]
+        }]
+        # here we don't want to retrieve other instances than "workers"
+        response = self.ec2.describe_instances(Filters=insFilter)
+        results = response['Reservations']
+        return len(results)
+
     """
     retrieve all instances from ec2
     return: list of instances -- workers only
@@ -199,6 +210,7 @@ class AWSSuite:
         workingInstances = self.getWorkingInstances()
         if not workingInstances:
             return awsConfig.NO_WORKER
+
         # use index of id to identify?
         workerToShrink = workingInstances[0]
         response = self.elb.deregister_targets(

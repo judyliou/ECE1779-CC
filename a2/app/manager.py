@@ -8,8 +8,8 @@ import json
 bootstrap = Bootstrap(webapp)
 awsSuite = awsUtils.AWSSuite()
 
-@webapp.route('/')
-def index():
+@webapp.route('/manager')
+def view_manager():
     print('hello')
     instances = awsSuite.getWorkingInstances()
     # instances = awsSuite.getAllWorkers()
