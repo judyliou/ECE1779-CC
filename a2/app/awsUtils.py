@@ -75,11 +75,10 @@ class AWSSuite:
                 InstanceIds=[instance["Id"]])
 
         # this is even more interesting: you can't register a
-        # un-runnint instance into a target-group, which means you need
+        # un-running instance into a target-group, which means you need
         # another loop to wait until it's running
         while stateResponse['InstanceStatuses'][0]['InstanceState'][
                 'Name'] != 'running':
-            # jesus this is too much waste
             time.sleep(2)
             stateResponse = self.ec2.describe_instance_status(
                 InstanceIds=[instance["Id"]])
@@ -127,7 +126,7 @@ class AWSSuite:
         workers = self.getAllWorkers()
         workingWorkers = self.getWorkingInstances()
         uuWorkers = []
-        # notice that two list of workers doesn't look the same
+        # notice that two lists of workers don't look the same
         # can't use list minus
         wwIds = []
         for ww in workingWorkers:
@@ -210,6 +209,9 @@ class AWSSuite:
                     'Port': 5000,
                 },
             ])
+        self.ec2.stop_instances(
+            InstanceIds = [workerToShrink['Id']]
+        )
         # deregister the instance
         if response and 'ResponseMetadata' in response:
             return awsConfig.DEREGISTERED
@@ -233,9 +235,7 @@ class AWSSuite:
         return {'number': successNum, 'msg': awsConfig.DEREGISTERED}
 
     """
-    this is ambiguous: after stopping, manually run every instance would
-    be the only option to let the elb run as the same. 'cause it's doesn't
-    make sense to start every instance from manager itself
+    stop all instances
     """
     def stopAllInstances(self):
         instances = self.getAllWorkers()

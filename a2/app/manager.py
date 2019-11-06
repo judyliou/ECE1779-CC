@@ -1,5 +1,5 @@
 from app import webapp
-from flask import render_template
+from flask import render_template, request
 from app import awsUtils
 from app.config import awsConfig
 from flask_bootstrap import Bootstrap
@@ -51,4 +51,18 @@ def stop():
 def delete():
     response = awsSuite.deleteAll()
     return json.dumps({'success': 1, "msg": 'Delete successfully'})
-    
+
+@webapp.route('/config', methods=['GET', 'POST'])
+def config():
+    return render_template("/config.html")
+
+@webapp.route('/configAutoScaling', methods=['GET', 'POST'])
+def configAutoScaling():
+    ratio = request.form['ratio']
+    thresholdHigh = request.form['thresholdHigh']
+    thresholdLow = request.form['thresholdLow']
+    ratioMsg = ""
+    thMsg = ""
+    tlMsg = ""
+
+    return render_template("/config.html", ratioMsg=ratioMsg, thMsg=thMsg, tlMsg=tlMsg)

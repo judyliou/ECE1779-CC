@@ -17,6 +17,10 @@ $(document).ready(function() {
     $('#stopBtn').on("click", function() {
         stopAll()
     })
+
+    $('#configBtn').on("click", function() {
+        config()
+    })
 })
 
 function getLoading() {
@@ -87,4 +91,8 @@ function stopAll() {
     area.appendChild(loadingArea)
     alert("it's your choice to stop all")
     window.location.href = "/stop";
+}
+
+function config() {
+    window.location.href = "/config";
 }
