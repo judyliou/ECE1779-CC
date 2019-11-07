@@ -41,7 +41,35 @@ class AWSSuite:
         for result in results:
             if len(result['Instances']) > 0:
                 # we only need running workers
-                if result['Instances'][0]['State']['Name'] != "terminated" and result['Instances'][0]['State']['Name'] != "terminated":
+                if result['Instances'][0]['State']['Name'] != "terminated" and result['Instances'][0]['State']['Name'] != "shutting-down":
+                    instances.append({
+                        'Id':
+                        result['Instances'][0]['InstanceId'],
+                        'State':
+                        result['Instances'][0]['State']['Name'],
+                        'Port':
+                        5000
+                    })
+        return instances
+    
+    """
+    retrieve all instances from ec2
+    return: list of instances -- managers only
+    """
+    def getAllManagers(self):
+        instances = []
+        tagName = str("tag:" + awsConfig.managerTag['key'])
+        insFilter = [{
+            'Name': tagName,
+            'Values': [awsConfig.managerTag['value']]
+        }]
+        # here we don't want to retrieve other instances than "workers"
+        response = self.ec2.describe_instances(Filters=insFilter)
+        results = response['Reservations']
+        for result in results:
+            if len(result['Instances']) > 0:
+                # we only need running workers
+                if result['Instances'][0]['State']['Name'] != "terminated" and result['Instances'][0]['State']['Name'] != "shutting-down":
                     instances.append({
                         'Id':
                         result['Instances'][0]['InstanceId'],
@@ -251,12 +279,17 @@ class AWSSuite:
     """
     def stopAllInstances(self):
         instances = self.getAllWorkers()
+        managers = self.getAllManagers()
         if not instances:
             return awsConfig.ALL_STOPED
         instancesIds = []
+        managerIds = []
         for instance in instances:
             instancesIds.append(instance["Id"])
+        for manager in managers:
+            managerIds.append(manager["Id"])
         response = self.ec2.terminate_instances(InstanceIds=instancesIds)
+        self.ec2.stop_instances(InstanceIds=managerIds)
         print(response)
         if response and 'TerminatingInstances' in response:
             if len(response['TerminatingInstances']) == len(instancesIds):

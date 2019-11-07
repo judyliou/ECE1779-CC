@@ -38,7 +38,10 @@ def check_status(flag):
     print('cpu data point:', len(cpu['Datapoints']))
     for point in cpu['Datapoints']:
         cpu_record.append(point['Average'])
-    avg_CPU = sum(cpu_record)/len(cpu_record)
+    if len(cpu_record) == 0:
+        avg_CPU = 0
+    else:
+        avg_CPU = sum(cpu_record)/len(cpu_record)
     print(avg_CPU)
 
     # check wether over the threshold
