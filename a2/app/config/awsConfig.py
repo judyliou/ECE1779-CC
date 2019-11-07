@@ -19,16 +19,16 @@ DEREGISTER_FAILED = 10006
 ALL_STOPED = 10007
 STOP_FAILED = 10008
 
-MAX_INSTANCES = 4
+MAX_INSTANCES = 10
 
 ####### Junbang's config #######
 imageId = "ami-00faef86802f615d4"
-grougArn = "arn:aws:elasticloadbalancing:us-east-1:350581778973:targetgroup/imageGroup/05ccba24a0a8b376"
+grougArn = "arn:aws:elasticloadbalancing:us-east-1:735141600372:targetgroup/a1group/bb2f4c7ebd44cf9b"
 workerTag = {"key": "type", "value": "worker"}
-keypair = "ece1779"
-securityGroup = "launch-wizard-1"
-s3Bucket = "ece1779-junbang-a1"
+keypair = "ece1779_a1"
+securityGroup = "launch-wizard-3"
+s3Bucket = "ece1779testbucket"
 dbConfig = {'user': 'admin',
              'password': 'ece1779pass',
-             'host': 'a1-db.cou8dzlst8q4.us-east-1.rds.amazonaws.com',
+             'host': 'db1779.c3pmiawhpay4.us-east-1.rds.amazonaws.com',
              'database': 'a1'}

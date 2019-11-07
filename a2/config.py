@@ -10,7 +10,7 @@ SECRET_KEY = 'hard to guess'
 #            'database': 'newdb'}
 
 # change!
-db_config = {'user': 'root',
+db_config = {'user': 'admin',
              'password': 'ece1779pass',
-             'host': '127.0.0.1',
+             'host': 'db1779.c3pmiawhpay4.us-east-1.rds.amazonaws.com',
              'database': 'a2'}

@@ -1,5 +1,5 @@
 from app import webapp
-from flask import render_template, request
+from flask import render_template, request, redirect, url_for
 from app import awsUtils
 from app.config import awsConfig
 from flask_bootstrap import Bootstrap
@@ -8,7 +8,7 @@ import json
 bootstrap = Bootstrap(webapp)
 awsSuite = awsUtils.AWSSuite()
 
-@webapp.route('/manager')
+@webapp.route('/')
 def view_manager():
     print('hello')
     instances = awsSuite.getWorkingInstances()
@@ -54,15 +54,26 @@ def delete():
 
 @webapp.route('/config', methods=['GET', 'POST'])
 def config():
-    return render_template("/config.html")
+    ratio, thresholdHigh, thresholdLow = awsSuite.fetchConfig()
+    return render_template("/config.html", ratio=ratio, thresholdHigh=thresholdHigh, thresholdLow=thresholdLow)
 
 @webapp.route('/configAutoScaling', methods=['GET', 'POST'])
 def configAutoScaling():
     ratio = request.form['ratio']
     thresholdHigh = request.form['thresholdHigh']
     thresholdLow = request.form['thresholdLow']
-    ratioMsg = ""
-    thMsg = ""
-    tlMsg = ""
-
-    return render_template("/config.html", ratioMsg=ratioMsg, thMsg=thMsg, tlMsg=tlMsg)
+    error = False
+    if not ratio.isdigit() or int(ratio) < 0 or int(ratio) > 5:
+        ratioMsg = "Please input right ratio"
+        error = True
+    if not thresholdHigh.isdigit() or int(thresholdHigh) < 0 or int(thresholdHigh) > 100:
+        thMsg = "Please input right thresholdHigh"
+        error = True
+    if not thresholdLow.isdigit() or int(thresholdLow) < 0 or int(thresholdLow) > 100:
+        tlMsg = "Please input right thresholdLow"
+        error = True
+    if error is False:
+        awsSuite.changeConfig(int(ratio), int(thresholdHigh), int(thresholdLow))
+        return redirect(url_for('view_manager'))
+    else:
+        return render_template("/config.html", ratioMsg=ratioMsg, thMsg=thMsg, tlMsg=tlMsg)

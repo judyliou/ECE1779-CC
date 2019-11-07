@@ -33,7 +33,11 @@ function getLoading() {
 function addInstance() {
     area = document.getElementById('addBtn')
     loadingArea = getLoading()
-    area.appendChild(loadingArea)    
+    area.appendChild(loadingArea)
+    area.disabled = true
+    document.getElementById('shrinkBtn').disabled = true
+    document.getElementById('deleteBtn').disabled = true   
+    document.getElementById('stopBtn').disabled = true
     $.ajax({
         type: 'POST',
         url: '/add',
@@ -53,6 +57,10 @@ function shrinkInstance() {
     area = document.getElementById('shrinkBtn')
     loadingArea = getLoading();
     area.appendChild(loadingArea)
+    area.disabled = true   
+    document.getElementById('addBtn').disabled = true
+    document.getElementById('deleteBtn').disabled = true   
+    document.getElementById('stopBtn').disabled = true
     $.ajax({
         type: 'POST',
         url: '/shrink',
@@ -72,6 +80,10 @@ function deleteAll() {
     area = document.getElementById('deleteBtn')
     loadingArea = getLoading();
     area.appendChild(loadingArea)
+    area.disabled = true   
+    document.getElementById('addBtn').disabled = true
+    document.getElementById('shrinkBtn').disabled = true   
+    document.getElementById('stopBtn').disabled = true
     alert("it's your choice to delete all")
     $.ajax({
         type: 'POST',
@@ -89,6 +101,10 @@ function stopAll() {
     area = document.getElementById('stopBtn')
     loadingArea = getLoading();
     area.appendChild(loadingArea)
+    area.disabled = true  
+    document.getElementById('addBtn').disabled = true
+    document.getElementById('shrinkBtn').disabled = true   
+    document.getElementById('deleteBtn').disabled = true 
     alert("it's your choice to stop all")
     window.location.href = "/stop";
 }

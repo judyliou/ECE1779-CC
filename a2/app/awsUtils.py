@@ -41,7 +41,7 @@ class AWSSuite:
         for result in results:
             if len(result['Instances']) > 0:
                 # we only need running workers
-                if result['Instances'][0]['State']['Name'] != "terminated":
+                if result['Instances'][0]['State']['Name'] != "terminated" and result['Instances'][0]['State']['Name'] != "terminated":
                     instances.append({
                         'Id':
                         result['Instances'][0]['InstanceId'],
@@ -157,7 +157,8 @@ class AWSSuite:
         instances = []
         if 'TargetHealthDescriptions' in response:
             for target in response['TargetHealthDescriptions']:
-                if target['TargetHealth']['State'] == 'healthy' or target['TargetHealth']['State'] == 'initial':
+                if target['TargetHealth']['State'] == 'healthy' or target[
+                        'TargetHealth']['State'] == 'initial':
                     instances.append({
                         'Id': target['Target']['Id'],
                         'Port': target['Target']['Port'],
@@ -176,6 +177,7 @@ class AWSSuite:
             ImageId=awsConfig.imageId,
             KeyName=awsConfig.keypair,
             SecurityGroups=[awsConfig.securityGroup],
+            Monitoring={'Enabled': True},
             TagSpecifications=[
                 {
                     'ResourceType':
@@ -221,9 +223,7 @@ class AWSSuite:
                     'Port': 5000,
                 },
             ])
-        self.ec2.stop_instances(
-            InstanceIds = [workerToShrink['Id']]
-        )
+        self.ec2.terminate_instances(InstanceIds=[workerToShrink['Id']])
         # deregister the instance
         if response and 'ResponseMetadata' in response:
             return awsConfig.DEREGISTERED
@@ -251,17 +251,18 @@ class AWSSuite:
     """
     def stopAllInstances(self):
         instances = self.getAllWorkers()
+        if not instances:
+            return awsConfig.ALL_STOPED
         instancesIds = []
         for instance in instances:
             instancesIds.append(instance["Id"])
-        response = self.ec2.stop_instances(
-            InstanceIds = instancesIds
-        )
-        if response and 'StoppingInstances' in response:
-            if len(response['StoppingInstances']) == len(instancesIds):
+        response = self.ec2.terminate_instances(InstanceIds=instancesIds)
+        print(response)
+        if response and 'TerminatingInstances' in response:
+            if len(response['TerminatingInstances']) == len(instancesIds):
                 return awsConfig.ALL_STOPED
         return awsConfig.STOP_FAILED
-    
+
     """
     delete all objects in s3 and truncate all tables
     return: message flag
@@ -280,15 +281,15 @@ class AWSSuite:
         objList = self.s3.list_objects(Bucket=awsConfig.s3Bucket)
         if objList and 'Contents' in objList:
             for key in objList['Contents']:
-                self.deleteImage(key['Key'])        
+                self.deleteImage(key['Key'])
 
     """
     delete one file in s3
     """
     def deleteImage(self, key):
         self.s3.delete_object(
-            Bucket = awsConfig.s3Bucket,
-            Key = key,
+            Bucket=awsConfig.s3Bucket,
+            Key=key,
         )
 
     """
@@ -305,13 +306,35 @@ class AWSSuite:
 
     def connect_to_database(self):
         return mysql.connector.connect(user=awsConfig.dbConfig['user'],
-                                    password=awsConfig.dbConfig['password'],
-                                    host=awsConfig.dbConfig['host'],
-                                    database=awsConfig.dbConfig['database'])
-
+                                       password=awsConfig.dbConfig['password'],
+                                       host=awsConfig.dbConfig['host'],
+                                       database=awsConfig.dbConfig['database'])
 
     def get_db(self):
         db = getattr(g, '_database', None)
         if db is None:
             db = g._database = self.connect_to_database()
         return db
+
+    def fetchConfig(self):
+        cnx = self.get_db()
+        cursor = cnx.cursor()
+        sQuery = "select * from a2.auto_config"
+        cursor.execute(sQuery)
+        config = cursor.fetchone()
+        if config is not None:
+            ratio = config[0]
+            thresholdHigh = config[1]
+            thresholdLow = config[2]
+        return ratio, thresholdHigh, thresholdLow
+
+    def changeConfig(self, ratio, thresholdHigh, thresholdLow):
+        cnx = self.get_db()
+        cursor = cnx.cursor()
+        tQuery = "truncate table a2.auto_config"
+        iQuery = "insert into a2.auto_config values (%s, %s, %s) "
+        cursor.execute(tQuery)
+        cnx.commit()
+        cursor.execute(iQuery, (ratio, thresholdHigh, thresholdLow, ))
+        cnx.commit()
+        

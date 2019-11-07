@@ -12,7 +12,7 @@
 
 {% block navbar %}
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#">Manager</a>
+    <a class="navbar-brand" href="/">Manager</a>
 </nav>
 {%- endblock navbar %}
 
@@ -21,22 +21,22 @@
     <h3> Change config of auto-scaling </h3>
     <form action="/configAutoScaling" class="config-table form-group" method="post">
         <div class="config-text-block">
-            <p class="config-label">Ratio:</p>
-            <input type="text" class="form-control config-text" name="ratio" placeholder="from * to *">
+            <p class="config-label">Ratio: {% if ratio %} ({{ratio}} for now) {% endif %}</p>
+            <input type="text" class="form-control config-text" name="ratio" placeholder="from 0 to 5">
             {% if ratioMsg %}
             <p class="config-msg"> *{{ ratioMsg }}</p>
             {% endif %}
         </div>
         <div class="config-text-block">
-            <p class="config-label">High-Threshold:</p>
-            <input type="text" class="form-control config-text" name="thresholdHigh" placeholder="from * to *">
+            <p class="config-label">High-Threshold (%): {% if thresholdHigh %} ({{thresholdHigh}} for now) {% endif %} </p>
+            <input type="text" class="form-control config-text" name="thresholdHigh" placeholder="from 0 to 100">
             {% if thMsg %}
             <p class="config-msg"> *{{ thMsg }}</p>
             {% endif %}
         </div>
         <div class="config-text-block">
-            <p class="config-label">Low-Threshold:</p>
-            <input type="text" class="form-control config-text" name="thresholdLow" placeholder="from * to *">
+            <p class="config-label">Low-Threshold (%): {% if thresholdLow %} ({{thresholdLow}} for now) {% endif %}</p>
+            <input type="text" class="form-control config-text" name="thresholdLow" placeholder="from 0 to 100">
             {% if tlMsg %}
             <p class="config-msg"> *{{ tlMsg }}</p>
             {% endif %}
@@ -44,6 +44,7 @@
         <div class="config-text-block">
             <input type="submit" class="btn btn-primary config-btn" value="Confirm">
             <input type="reset" class="btn btn-primary config-btn">
+            <input type="button" class="btn btn-primary config-btn" value="Back" onclick="window.location.href='/'">
         </div>
         <br>
 
