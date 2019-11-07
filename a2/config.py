@@ -1,16 +1,12 @@
 import os
 
-# SECRET_KEY="\x8d\xfcg5\xfe\x00\xbe\x83\xdf>\x19\x01\xd8\xd3QP\x04\xe8\x94s\x9a.\x1a\xe2W\xfb\x93X\xa7E&_"
+#Assign secret key
 SECRET_KEY = 'hard to guess'
-S3_BUCKET = 'ece1779testbucketa2'
+#Assign variable to s3 bucket
+S3_BUCKET = 'ece1779a2usebucket'
 
-#db_config = {'user': 'root',
-#             'password': '3263025++',
-#             'host': '127.0.0.1',
-#             'database': 'newdb'}
-
-# change!
-db_config = {'user': 'root',
-             'password': 'Harsha*123',
-             'host': '127.0.0.1',
-             'database': 'a1'}
+#Database configuration
+db_config = {'user': 'user',
+             'password': 'ECE1779A2',
+             'host': 'ece1779a2.caqgtrj2rgx3.us-east-1.rds.amazonaws.com',
+             'database': 'db_a2'}
