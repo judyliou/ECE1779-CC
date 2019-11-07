@@ -10,6 +10,3 @@ webapp.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024
 
 from app import worker
 from app import manager
-
-webapp.register_blueprint(api, url_prefix='/api')
-

@@ -7,3 +7,5 @@ CREATE TABLE `auto_config` (
   `threshold_low` int(11) NOT NULL,
   PRIMARY KEY (`ratio`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
+
+INSERT INTO auto_config values (2, 20, 10);
