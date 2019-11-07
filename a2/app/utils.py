@@ -31,7 +31,7 @@ def teardown_db(exception):
     db = getattr(g, '_database', None)
     if db is not None:
         db.close()
-#
+
 
 def create_presigned_url(bucket_name, object_name, expiration=86400):
     # Generate a presigned URL for the S3 object
@@ -48,7 +48,6 @@ def create_presigned_url(bucket_name, object_name, expiration=86400):
     # The response contains the presigned URL
     return response
 
-#
 
 def encryptString(string):
     sha_signature = hashlib.sha256(string.encode()).hexdigest()
