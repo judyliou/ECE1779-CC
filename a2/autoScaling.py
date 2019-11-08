@@ -51,7 +51,7 @@ def check_status(flag):
             flag = 1
         elif avg_CPU <= threshold_low:
             print('under threshold')
-            num_new_workers = int(num_workers * (ratio - 1))
+            num_new_workers = int((num_workers / ratio) * (ratio - 1))
             awsSuite.shrinkWorkers(num_new_workers)
             flag = 1
     else:  # still creating/deleting instances
