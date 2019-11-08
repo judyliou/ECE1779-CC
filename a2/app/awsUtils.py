@@ -280,16 +280,19 @@ class AWSSuite:
     def stopAllInstances(self):
         instances = self.getAllWorkers()
         managers = self.getAllManagers()
-        if not instances:
-            return awsConfig.ALL_STOPED
         instancesIds = []
         managerIds = []
-        for instance in instances:
-            instancesIds.append(instance["Id"])
+        if not managers:
+            return awsConfig.STOP_FAILED
         for manager in managers:
             managerIds.append(manager["Id"])
-        response = self.ec2.terminate_instances(InstanceIds=instancesIds)
+            print(manager["Id"])
         self.ec2.stop_instances(InstanceIds=managerIds)
+        if not instances:
+            return awsConfig.ALL_STOPED
+        for instance in instances:
+            instancesIds.append(instance["Id"])   
+        response = self.ec2.terminate_instances(InstanceIds=instancesIds)
         print(response)
         if response and 'TerminatingInstances' in response:
             if len(response['TerminatingInstances']) == len(instancesIds):
