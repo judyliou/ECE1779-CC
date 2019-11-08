@@ -63,7 +63,10 @@ def configAutoScaling():
     thresholdHigh = request.form['thresholdHigh']
     thresholdLow = request.form['thresholdLow']
     error = False
-    if not ratio.isdigit() or int(ratio) < 0 or int(ratio) > 5:
+    ratioMsg = ""
+    thMsg = ""
+    tlMsg = ""
+    if not ratio.isdigit() or int(ratio) <= 0 or int(ratio) > 5:
         ratioMsg = "Please input right ratio"
         error = True
     if not thresholdHigh.isdigit() or int(thresholdHigh) < 0 or int(thresholdHigh) > 100:

@@ -22,7 +22,7 @@
     <form action="/configAutoScaling" class="config-table form-group" method="post">
         <div class="config-text-block">
             <p class="config-label">Ratio: {% if ratio %} ({{ratio}} for now) {% endif %}</p>
-            <input type="text" class="form-control config-text" name="ratio" placeholder="from 0 to 5">
+            <input type="text" class="form-control config-text" name="ratio" placeholder="from 1 to 5">
             {% if ratioMsg %}
             <p class="config-msg"> *{{ ratioMsg }}</p>
             {% endif %}

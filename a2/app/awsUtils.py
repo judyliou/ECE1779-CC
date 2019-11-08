@@ -14,6 +14,7 @@ class AWSSuite:
         self.s3 = boto3.client('s3')
 
     def getWorkersNum(self):
+        num = 0
         tagName = str("tag:" + awsConfig.workerTag['key'])
         insFilter = [{
             'Name': tagName,
@@ -22,7 +23,12 @@ class AWSSuite:
         # here we don't want to retrieve other instances than "workers"
         response = self.ec2.describe_instances(Filters=insFilter)
         results = response['Reservations']
-        return len(results)
+        for result in results:
+            if len(result['Instances']) > 0:
+                # we only need running workers
+                if result['Instances'][0]['State']['Name'] != "terminated" and result['Instances'][0]['State']['Name'] != "shutting-down":
+                    num += 1
+        return num
 
     """
     retrieve all instances from ec2
