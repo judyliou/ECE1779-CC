@@ -10,11 +10,24 @@ awsSuite = awsUtils.AWSSuite()
 
 @webapp.route('/')
 def view_manager():
-    print('hello')
+    instances = awsSuite.getWorkingInstances()
+    print("cur worker #:", len(instances))
+    if len(instances) != 1:
+        return render_template('initialize.html')
+    print('enough insts')
     instances = awsSuite.getWorkingInstances()
     # instances = awsSuite.getAllWorkers()
     # instances = awsSuite.getUnusedInstances()
     return render_template('manager.html', instances=instances)
+
+@webapp.route('/initialize', methods=['GET', 'POST'])
+def initialize():
+    print('initializing...')
+    awsSuite.terminateAllWorkers()
+    response = awsSuite.growOneWorker()
+    if response:
+        print('finish initializing')
+    return json.dumps({'success': 1, "msg": 'Success'})
 
 @webapp.route('/add', methods=['GET', 'POST'])
 def add():
@@ -40,7 +53,8 @@ def shrink():
 
 @webapp.route('/stop', methods=['GET', 'POST'])
 def stop():
-    response = awsSuite.stopAllInstances()
+    response = awsSuite.terminateAllWorkers()
+    awsSuite.stopManager()
     if response == awsConfig.ALL_STOPED:
         msg = "All instances successfully stopped"
     else:

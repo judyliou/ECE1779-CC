@@ -1,7 +1,4 @@
 $(document).ready(function() {
-
-    console.log("caonima, ready")
-
     $('#addBtn').on("click", function() {
         addInstance()
     });
