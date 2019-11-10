@@ -12,7 +12,7 @@ awsSuite = awsUtils.AWSSuite()
 def view_manager():
     instances = awsSuite.getWorkingInstances()
     print("cur worker #:", len(instances))
-    if len(instances) != 1:
+    if len(instances) < 1:
         return render_template('initialize.html')
     print('enough insts')
     instances = awsSuite.getWorkingInstances()
@@ -22,7 +22,6 @@ def view_manager():
 
 @webapp.route('/initialize', methods=['GET', 'POST'])
 def initialize():
-    print('initializing...')
     awsSuite.terminateAllWorkers()
     response = awsSuite.growOneWorker()
     if response:
