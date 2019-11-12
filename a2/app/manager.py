@@ -97,4 +97,4 @@ def configAutoScaling():
         awsSuite.changeConfig(int(ratioHigh), int(ratioLow), int(thresholdHigh), int(thresholdLow))
         return redirect(url_for('view_manager'))
     else:
-        return render_template("/config.html", ratiohMsg=ratiohMsg, ratiolMsg=ratiolMsg thMsg=thMsg, tlMsg=tlMsg)
+        return render_template("/config.html", ratiohMsg=ratiohMsg, ratiolMsg=ratiolMsg, thMsg=thMsg, tlMsg=tlMsg)
