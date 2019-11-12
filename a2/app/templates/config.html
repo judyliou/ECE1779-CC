@@ -1,0 +1,62 @@
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="static/styles/ui.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+
+    {% extends "base.html" %}
+    {% block title %} Config Auto-Scaling {% endblock title %}
+</head>
+
+{% block navbar %}
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="/">Manager</a>
+</nav>
+{%- endblock navbar %}
+
+{% block content %}
+<div class="config-div">
+    <h3> Change config of auto-scaling </h3>
+    <form action="/configAutoScaling" class="config-table form-group" method="post">
+        <div class="config-text-block">
+            <p class="config-label">Ratio for High Threshold: {% if ratioHigh %} ({{ratioHigh}} for now) {% endif %}</p>
+            <input type="text" class="form-control config-text" name="ratioHigh" placeholder="from 1 to 5">
+            {% if ratiohMsg %}
+            <p class="config-msg"> *{{ ratiohMsg }}</p>
+            {% endif %}
+        </div>
+        <div class="config-text-block">
+            <p class="config-label">Ratio for Low Threshold: {% if ratioLow %} ({{ratioLow}} for now) {% endif %}</p>
+            <input type="text" class="form-control config-text" name="ratioLow" placeholder="from 1 to 5">
+            {% if ratiolMsg %}
+            <p class="config-msg"> *{{ ratiolMsg }}</p>
+            {% endif %}
+        </div>
+        <div class="config-text-block">
+            <p class="config-label">High-Threshold (%): {% if thresholdHigh %} ({{thresholdHigh}} for now) {% endif %} </p>
+            <input type="text" class="form-control config-text" name="thresholdHigh" placeholder="from 0 to 100">
+            {% if thMsg %}
+            <p class="config-msg"> *{{ thMsg }}</p>
+            {% endif %}
+        </div>
+        <div class="config-text-block">
+            <p class="config-label">Low-Threshold (%): {% if thresholdLow %} ({{thresholdLow}} for now) {% endif %}</p>
+            <input type="text" class="form-control config-text" name="thresholdLow" placeholder="from 0 to 100">
+            {% if tlMsg %}
+            <p class="config-msg"> *{{ tlMsg }}</p>
+            {% endif %}
+        </div>
+        <div class="config-text-block">
+            <input type="submit" class="btn btn-primary config-btn" value="Confirm">
+            <input type="reset" class="btn btn-primary config-btn">
+            <input type="button" class="btn btn-primary config-btn" value="Back" onclick="window.location.href='/'">
+        </div>
+        <br>
+
+    </form>
+</div>
+{% endblock content %}
+
+</html>

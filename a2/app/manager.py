@@ -1,5 +1,5 @@
 from app import webapp
-from flask import render_template
+from flask import render_template, request, redirect, url_for
 from app import awsUtils
 from app.config import awsConfig
 from flask_bootstrap import Bootstrap
@@ -8,45 +8,93 @@ import json
 bootstrap = Bootstrap(webapp)
 awsSuite = awsUtils.AWSSuite()
 
-@webapp.route('/manager')
+@webapp.route('/')
 def view_manager():
-    print('hello')
+    instances = awsSuite.getWorkingInstances()
+    print("cur worker #:", len(instances))
+    if len(instances) < 1:
+        return render_template('initialize.html')
+    print('enough insts')
     instances = awsSuite.getWorkingInstances()
     # instances = awsSuite.getAllWorkers()
     # instances = awsSuite.getUnusedInstances()
     return render_template('manager.html', instances=instances)
 
+@webapp.route('/initialize', methods=['GET', 'POST'])
+def initialize():
+    awsSuite.terminateAllWorkers()
+    response = awsSuite.growOneWorker()
+    if response:
+        print('finish initializing')
+    return json.dumps({'success': 1, "msg": 'Success'})
+
 @webapp.route('/add', methods=['GET', 'POST'])
 def add():
     response = awsSuite.growOneWorker()
     if response == awsConfig.REGISTERED:
-        return json.dumps({'success': 1, "msg": 'success'})
+        return json.dumps({'success': 1, "msg": 'Success'})
     elif response == awsConfig.MAX_WORKERS:
-        return json.dumps({'success': 0, "msg": 'instances exceed 10'})
+        return json.dumps({'success': 0, "msg": 'Instances exceed 10'})
     elif response == awsConfig.CREATE_FAILED:
-        return json.dumps({'success': 0, "msg": 'failed to create an instance'})
+        return json.dumps({'success': 0, "msg": 'Failed to create an instance'})
     else:
-        return json.dumps({'success': 0, "msg": 'network error'})
+        return json.dumps({'success': 0, "msg": 'Network error'})
 
 @webapp.route('/shrink', methods=['GET', 'POST'])
 def shrink():
     response = awsSuite.shrinkOneWorker()
-    # response = awsSuite.shrinkWorkers(3)
-    # return json.dumps({'success': 0, "msg": str(response)})
     if response == awsConfig.DEREGISTERED:
-        return json.dumps({'success': 1, "msg": 'success'})
+        return json.dumps({'success': 1, "msg": 'Success'})
     elif response == awsConfig.NO_WORKER:
-        return json.dumps({'success': 0, "msg": 'no worker to shrink'})
+        return json.dumps({'success': 0, "msg": 'No worker to shrink'})
     else:
-        return json.dumps({'success': 0, "msg": 'network error'})
+        return json.dumps({'success': 0, "msg": 'Network error'})
 
 @webapp.route('/stop', methods=['GET', 'POST'])
 def stop():
-    response = awsSuite.stopAllInstances()
+    response = awsSuite.terminateAllWorkers()
+    awsSuite.stopManager()
     if response == awsConfig.ALL_STOPED:
         msg = "All instances successfully stopped"
     else:
         msg = "Some instances not successfully stopped due to network error"
     return render_template('stopped.html', msg=msg)
-    # return json.dumps({'success': 1, 'msg': msg})
-    # return json.dumps(dict(redirect='stopped.html'))
+
+@webapp.route('/delete', methods=['GET', 'POST'])
+def delete():
+    response = awsSuite.deleteAll()
+    return json.dumps({'success': 1, "msg": 'Delete successfully'})
+
+@webapp.route('/config', methods=['GET', 'POST'])
+def config():
+    ratio, thresholdHigh, thresholdLow = awsSuite.fetchConfig()
+    return render_template("/config.html", ratio=ratio, thresholdHigh=thresholdHigh, thresholdLow=thresholdLow)
+
+@webapp.route('/configAutoScaling', methods=['GET', 'POST'])
+def configAutoScaling():
+    ratioHigh = request.form['ratioHogh']
+    ratioLow = request.form['ratioLow']
+    thresholdHigh = request.form['thresholdHigh']
+    thresholdLow = request.form['thresholdLow']
+    error = False
+    ratiohMsg = ""
+    ratiolMsg = ""
+    thMsg = ""
+    tlMsg = ""
+    if not ratioHigh.isdigit() or int(ratioHigh) <= 0 or int(ratioHigh) > 5:
+        ratiohMsg = "Please input right ratio for thresholdHigh"
+        error = True
+    if not ratioLow.isdigit() or int(ratioLow) <= 0 or int(ratioLow) > 5:
+        ratiolMsg = "Please input right ratio for thresholdLow"
+        error = True
+    if not thresholdHigh.isdigit() or int(thresholdHigh) < 0 or int(thresholdHigh) > 100:
+        thMsg = "Please input right thresholdHigh"
+        error = True
+    if not thresholdLow.isdigit() or int(thresholdLow) < 0 or int(thresholdLow) > 100:
+        tlMsg = "Please input right thresholdLow"
+        error = True
+    if error is False:
+        awsSuite.changeConfig(int(ratioHigh), int(ratioLow), int(thresholdHigh), int(thresholdLow))
+        return redirect(url_for('view_manager'))
+    else:
+        return render_template("/config.html", ratiohMsg=ratiohMsg, ratiolMsg=ratiolMsg thMsg=thMsg, tlMsg=tlMsg)

@@ -1,6 +1,8 @@
 import boto3
 import time
 import json
+from flask import g
+import mysql.connector
 
 from app.config import awsConfig
 
@@ -9,8 +11,10 @@ class AWSSuite:
     def __init__(self):
         self.ec2 = boto3.client('ec2')
         self.elb = boto3.client('elbv2')
+        self.s3 = boto3.client('s3')
 
     def getWorkersNum(self):
+        num = 0
         tagName = str("tag:" + awsConfig.workerTag['key'])
         insFilter = [{
             'Name': tagName,
@@ -19,7 +23,12 @@ class AWSSuite:
         # here we don't want to retrieve other instances than "workers"
         response = self.ec2.describe_instances(Filters=insFilter)
         results = response['Reservations']
-        return len(results)
+        for result in results:
+            if len(result['Instances']) > 0:
+                # we only need running workers
+                if result['Instances'][0]['State']['Name'] != "terminated" and result['Instances'][0]['State']['Name'] != "shutting-down":
+                    num += 1
+        return num
 
     """
     retrieve all instances from ec2
@@ -38,7 +47,35 @@ class AWSSuite:
         for result in results:
             if len(result['Instances']) > 0:
                 # we only need running workers
-                if result['Instances'][0]['State']['Name'] != "terminated":
+                if result['Instances'][0]['State']['Name'] != "terminated" and result['Instances'][0]['State']['Name'] != "shutting-down":
+                    instances.append({
+                        'Id':
+                        result['Instances'][0]['InstanceId'],
+                        'State':
+                        result['Instances'][0]['State']['Name'],
+                        'Port':
+                        5000
+                    })
+        return instances
+    
+    """
+    retrieve all instances from ec2
+    return: list of instances -- managers only
+    """
+    def getAllManagers(self):
+        instances = []
+        tagName = str("tag:" + awsConfig.managerTag['key'])
+        insFilter = [{
+            'Name': tagName,
+            'Values': [awsConfig.managerTag['value']]
+        }]
+        # here we don't want to retrieve other instances than "workers"
+        response = self.ec2.describe_instances(Filters=insFilter)
+        results = response['Reservations']
+        for result in results:
+            if len(result['Instances']) > 0:
+                # we only need running workers
+                if result['Instances'][0]['State']['Name'] != "terminated" and result['Instances'][0]['State']['Name'] != "shutting-down":
                     instances.append({
                         'Id':
                         result['Instances'][0]['InstanceId'],
@@ -58,10 +95,9 @@ class AWSSuite:
     def growOneWorker(self):
         # check number of working workers
         workingWorkers = self.getWorkingInstances()
-        if len(workingWorkers) >= 4:
+        if len(workingWorkers) >= awsConfig.MAX_INSTANCES:
             return awsConfig.MAX_WORKERS
         uuInstances = self.getUnusedInstances()
-        print(uuInstances)
         if not uuInstances:
             instance = self.createOneInstance()
         else:
@@ -84,11 +120,10 @@ class AWSSuite:
                 InstanceIds=[instance["Id"]])
 
         # this is even more interesting: you can't register a
-        # un-runnint instance into a target-group, which means you need
+        # un-running instance into a target-group, which means you need
         # another loop to wait until it's running
         while stateResponse['InstanceStatuses'][0]['InstanceState'][
                 'Name'] != 'running':
-            # jesus this is too much waste
             time.sleep(2)
             stateResponse = self.ec2.describe_instance_status(
                 InstanceIds=[instance["Id"]])
@@ -136,7 +171,7 @@ class AWSSuite:
         workers = self.getAllWorkers()
         workingWorkers = self.getWorkingInstances()
         uuWorkers = []
-        # notice that two list of workers doesn't look the same
+        # notice that two lists of workers don't look the same
         # can't use list minus
         wwIds = []
         for ww in workingWorkers:
@@ -156,7 +191,8 @@ class AWSSuite:
         instances = []
         if 'TargetHealthDescriptions' in response:
             for target in response['TargetHealthDescriptions']:
-                if target['TargetHealth']['State'] == 'healthy' or target['TargetHealth']['State'] == 'initial':
+                if target['TargetHealth']['State'] == 'healthy' or target[
+                        'TargetHealth']['State'] == 'initial':
                     instances.append({
                         'Id': target['Target']['Id'],
                         'Port': target['Target']['Port'],
@@ -175,6 +211,7 @@ class AWSSuite:
             ImageId=awsConfig.imageId,
             KeyName=awsConfig.keypair,
             SecurityGroups=[awsConfig.securityGroup],
+            Monitoring={'Enabled': True},
             TagSpecifications=[
                 {
                     'ResourceType':
@@ -220,6 +257,7 @@ class AWSSuite:
                     'Port': 5000,
                 },
             ])
+        self.ec2.terminate_instances(InstanceIds=[workerToShrink['Id']])
         # deregister the instance
         if response and 'ResponseMetadata' in response:
             return awsConfig.DEREGISTERED
@@ -243,19 +281,106 @@ class AWSSuite:
         return {'number': successNum, 'msg': awsConfig.DEREGISTERED}
 
     """
-    this is ambiguous: after stopping, manually run every instance would
-    be the only option to let the elb run as the same. 'cause it's doesn't
-    make sense to start every instance from manager itself
+    stop all instances
     """
-    def stopAllInstances(self):
+    def stopManager(self):
+        managers = self.getAllManagers()
+        managerIds = []
+        if not managers:
+            return awsConfig.STOP_FAILED
+        for manager in managers:
+            managerIds.append(manager["Id"])
+            print(manager["Id"])
+        self.ec2.stop_instances(InstanceIds=managerIds)
+        return awsConfig.ALL_STOPED
+
+    """
+    """
+    def terminateAllWorkers(self):
         instances = self.getAllWorkers()
         instancesIds = []
+        if not instances:
+            return awsConfig.ALL_STOPED
         for instance in instances:
-            instancesIds.append(instance["Id"])
-        response = self.ec2.stop_instances(
-            InstanceIds = instancesIds
-        )
-        if response and 'StoppingInstances' in response:
-            if len(response['StoppingInstances']) == len(instancesIds):
+            instancesIds.append(instance["Id"])   
+        response = self.ec2.terminate_instances(InstanceIds=instancesIds)
+        if response and 'TerminatingInstances' in response:
+            if len(response['TerminatingInstances']) == len(instancesIds):
                 return awsConfig.ALL_STOPED
         return awsConfig.STOP_FAILED
+
+    """
+    delete all objects in s3 and truncate all tables
+    return: message flag
+    """
+    def deleteAll(self):
+        # delete all in s3
+        self.deleteAllFromS3()
+        # truncate data from rds
+        self.truncateAllTables()
+        return True
+
+    """
+    delete all objects in s3
+    """
+    def deleteAllFromS3(self):
+        objList = self.s3.list_objects(Bucket=awsConfig.s3Bucket)
+        if objList and 'Contents' in objList:
+            for key in objList['Contents']:
+                self.deleteImage(key['Key'])
+
+    """
+    delete one file in s3
+    """
+    def deleteImage(self, key):
+        self.s3.delete_object(
+            Bucket=awsConfig.s3Bucket,
+            Key=key,
+        )
+
+    """
+    truncate two tables in database: users and photos
+    """
+    def truncateAllTables(self):
+        cnx = self.get_db()
+        cursor = cnx.cursor()
+        truncateUsers = '''truncate table users'''
+        truncatePhotos = '''truncate table photos'''
+        cursor.execute(truncateUsers, )
+        cursor.execute(truncatePhotos, )
+        cnx.commit()
+
+    def connect_to_database(self):
+        return mysql.connector.connect(user=awsConfig.dbConfig['user'],
+                                       password=awsConfig.dbConfig['password'],
+                                       host=awsConfig.dbConfig['host'],
+                                       database=awsConfig.dbConfig['database'])
+
+    def get_db(self):
+        db = getattr(g, '_database', None)
+        if db is None:
+            db = g._database = self.connect_to_database()
+        return db
+
+    def fetchConfig(self):
+        cnx = self.get_db()
+        cursor = cnx.cursor()
+        sQuery = "select * from a2.auto_config"
+        cursor.execute(sQuery)
+        config = cursor.fetchone()
+        if config is not None:
+            ratio = config[0]
+            thresholdHigh = config[1]
+            thresholdLow = config[2]
+        return ratio, thresholdHigh, thresholdLow
+
+    def changeConfig(self, ratioHigh, rationLow, thresholdHigh, thresholdLow):
+        cnx = self.get_db()
+        cursor = cnx.cursor()
+        tQuery = "truncate table a2.auto_config"
+        iQuery = "insert into a2.auto_config values (%s, %s, %s, %s) "
+        cursor.execute(tQuery)
+        cnx.commit()
+        cursor.execute(iQuery, (ratioHigh, rationLow, thresholdHigh, thresholdLow, ))
+        cnx.commit()
+        

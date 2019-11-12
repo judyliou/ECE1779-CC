@@ -18,11 +18,11 @@ def fetch_policy():
     cursor.execute(query)
     config = cursor.fetchone()
 
-    ratio, threshold_high, threshold_low = config[0], config[1] * 0.9, config[2] * 1.1
-    return ratio, threshold_high, threshold_low
+    ratio_high, ratio_low, threshold_high, threshold_low = config[0], config[1], config[2] * 0.9, config[3] * 1.1
+    return ratio_high, ratio_low, threshold_high, threshold_low
 
 def check_status(flag):
-    ratio, threshold_high, threshold_low = fetch_policy()
+    ratio_high, ratio_low, threshold_high, threshold_low = fetch_policy()
 
     # get CPU data
     cpu = cloudwatch.get_metric_statistics( 
@@ -38,20 +38,23 @@ def check_status(flag):
     print('cpu data point:', len(cpu['Datapoints']))
     for point in cpu['Datapoints']:
         cpu_record.append(point['Average'])
-    avg_CPU = sum(cpu_record)/len(cpu_record)
+    if len(cpu_record) == 0:
+        avg_CPU = 0
+    else:
+        avg_CPU = sum(cpu_record)/len(cpu_record)
     print(avg_CPU)
 
     # check wether over the threshold
     if flag == 0:
         num_workers = awsSuite.getWorkersNum()
         if avg_CPU >= threshold_high:
-            print('over threshold')
-            num_new_workers = num_workers * (ratio - 1)
+            num_new_workers = num_workers * (ratio_high - 1)
+            print('over threshold, add ', num_new_workers, " workers")
             awsSuite.growWorkers(num_new_workers)
             flag = 1
         elif avg_CPU <= threshold_low:
-            print('under threshold')
-            num_new_workers = int((num_workers / ratio) * (ratio - 1))
+            num_new_workers = int((num_workers / ratio_low) * (ratio_low - 1))
+            print('under threshold, shut ', num_new_workers, " workers")
             awsSuite.shrinkWorkers(num_new_workers)
             flag = 1
     else:  # still creating/deleting instances
@@ -60,7 +63,7 @@ def check_status(flag):
             flag = 0
 
     # Set a timer for checking every two minutes
-    timer = threading.Timer(120, check_status, [flag])
+    timer = threading.Timer(20, check_status, [flag])
     timer.start()    
 
 if __name__ == "__main__":
