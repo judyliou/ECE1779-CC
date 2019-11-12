@@ -19,16 +19,17 @@ DEREGISTER_FAILED = 10006
 ALL_STOPED = 10007
 STOP_FAILED = 10008
 
-# ####### Junbang's config #######
-# imageId = "ami-0504cab097c420742"
-# grougArn = "arn:aws:elasticloadbalancing:us-east-1:350581778973:targetgroup/imageGroup/05ccba24a0a8b376"
-# workerTag = {"key": "type", "value": "worker"}
-# keypair = "ece1779"
-# securityGroup = "launch-wizard-1"
+MAX_INSTANCES = 10
 
-####### You-Syuan's config #######
-imageId = "ami-0504cab097c420742"
+####### Junbang's config #######
+imageId = "ami-027dc50ffd664187b"
 grougArn = "arn:aws:elasticloadbalancing:us-east-1:735141600372:targetgroup/a1group/bb2f4c7ebd44cf9b"
 workerTag = {"key": "type", "value": "worker"}
+managerTag = {"key": "type", "value": "manager"}
 keypair = "ece1779_a1"
 securityGroup = "launch-wizard-3"
+s3Bucket = "ece1779testbucket"
+dbConfig = {'user': 'admin',
+             'password': 'ece1779pass',
+             'host': 'db1779.c3pmiawhpay4.us-east-1.rds.amazonaws.com',
+             'database': 'a1'}

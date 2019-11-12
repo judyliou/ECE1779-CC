@@ -13,15 +13,15 @@
 
 {% block navbar %}
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#">Manager</a>
+    <a class="navbar-brand" href="/">Manager</a>
 </nav>
 {%- endblock navbar %}
 
 {% block content %}
 
 <div class="btn-list">
-    <a href="http://a2-balancer-116205329.us-east-1.elb.amazonaws.com:5000/" class="elb-url">
-        Load Balancer: a2-balancer-116205329.us-east-1.elb.amazonaws.com
+    <a href="http://ece1779-a2-2077715450.us-east-1.elb.amazonaws.com:5000/" class="elb-url">
+        Load Balancer: ece1779-a2-2077715450.us-east-1.elb.amazonaws.com
     </a>
 
     <table class="list-table table table-bordered">
@@ -36,7 +36,7 @@
         {% for instance in instances %}
         <tbody>
             <td>{{ loop.index }}</td>
-            <td>{{ instance.Id }}</td>
+            <td><a href="{{url_for('viewWorker', id=instance.Id)}}">{{ instance.Id }}</a></td>
             <td>{{ instance.Port }}</td>
             <td>{{ instance.State }}</td>
         </tbody>
@@ -48,6 +48,7 @@
     <button id="shrinkBtn" type="button" class="btn btn-outline-primary">Shrink</button>
     <button id="stopBtn" type="button" class="btn btn-outline-warning">Stop</button>
     <button id="deleteBtn" type="button" class="btn btn-outline-danger">Delete</button>
+    <button id="configBtn" type="button" class="btn btn-outline-info">Config</button>
 
 </div>
 

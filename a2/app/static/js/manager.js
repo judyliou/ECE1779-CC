@@ -1,31 +1,24 @@
 $(document).ready(function() {
-
-    console.log("caonima, ready")
-
     $('#addBtn').on("click", function() {
-        console.log("add onclick")
         addInstance()
     });
 
     $('#shrinkBtn').on("click", function() {
-        console.log("shrink onclick")
         shrinkInstance()
     })
 
     $('#deleteBtn').on("click", function() {
-        console.log("delete onclick")
         deleteAll()
     })
 
     $('#stopBtn').on("click", function() {
-        console.log("stop onclick")
         stopAll()
     })
-})
 
-function refresh() {
-    location.reload();
-}
+    $('#configBtn').on("click", function() {
+        config()
+    })
+})
 
 function getLoading() {
     loadingArea = document.createElement('span')
@@ -36,16 +29,18 @@ function getLoading() {
 
 function addInstance() {
     area = document.getElementById('addBtn')
-    // loadingArea = document.createElement('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>')
     loadingArea = getLoading()
-    area.appendChild(loadingArea)    
+    area.appendChild(loadingArea)
+    area.disabled = true
+    document.getElementById('shrinkBtn').disabled = true
+    document.getElementById('deleteBtn').disabled = true   
+    document.getElementById('stopBtn').disabled = true
     $.ajax({
         type: 'POST',
         url: '/add',
         data: '',
         contentType: false,
         success: function(data) {
-            console.log(data)
             let res = JSON.parse(data)
             if(res.success != 1) {
                 alert(res.msg)
@@ -59,13 +54,16 @@ function shrinkInstance() {
     area = document.getElementById('shrinkBtn')
     loadingArea = getLoading();
     area.appendChild(loadingArea)
+    area.disabled = true   
+    document.getElementById('addBtn').disabled = true
+    document.getElementById('deleteBtn').disabled = true   
+    document.getElementById('stopBtn').disabled = true
     $.ajax({
         type: 'POST',
         url: '/shrink',
         data: '',
         contentType: false,
         success: function(data) {
-            console.log(data)
             let res = JSON.parse(data)
             if(res.success != 1) {
                 alert(res.msg)
@@ -79,25 +77,35 @@ function deleteAll() {
     area = document.getElementById('deleteBtn')
     loadingArea = getLoading();
     area.appendChild(loadingArea)
-    console.log("it's your choice to delete all")
-    location.reload();
+    area.disabled = true   
+    document.getElementById('addBtn').disabled = true
+    document.getElementById('shrinkBtn').disabled = true   
+    document.getElementById('stopBtn').disabled = true
+    alert("it's your choice to delete all")
+    $.ajax({
+        type: 'POST',
+        url: '/delete',
+        data: '',
+        contentType: false,
+        success: function(data) {
+            alert("delete successfully")
+            location.reload();
+        }
+    })
 }
 
 function stopAll() {
     area = document.getElementById('stopBtn')
     loadingArea = getLoading();
     area.appendChild(loadingArea)
+    area.disabled = true  
+    document.getElementById('addBtn').disabled = true
+    document.getElementById('shrinkBtn').disabled = true   
+    document.getElementById('deleteBtn').disabled = true 
     alert("it's your choice to stop all")
     window.location.href = "/stop";
-    // $.ajax({
-    //     type: 'POST',
-    //     url: '/stop',
-    //     data: '',
-    //     contentType: false,
-    //     success: function(data) {
-    //         console.log(data)
-    //         let res = JSON.parse(data)
-    //         window.location.href = res.redirect;
-    //     }
-    // })
+}
+
+function config() {
+    window.location.href = "/config";
 }
