@@ -67,8 +67,8 @@ def delete():
 
 @webapp.route('/config', methods=['GET', 'POST'])
 def config():
-    ratio, thresholdHigh, thresholdLow = awsSuite.fetchConfig()
-    return render_template("/config.html", ratio=ratio, thresholdHigh=thresholdHigh, thresholdLow=thresholdLow)
+    ratioHigh, ratioLow, thresholdHigh, thresholdLow = awsSuite.fetchConfig()
+    return render_template("/config.html", ratioHigh=ratioHigh, ratioLow=ratioLow, thresholdHigh=thresholdHigh, thresholdLow=thresholdLow)
 
 @webapp.route('/configAutoScaling', methods=['GET', 'POST'])
 def configAutoScaling():
