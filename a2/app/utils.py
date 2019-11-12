@@ -3,6 +3,9 @@ from flask import g
 import logging
 import hashlib
 import random
+import boto3
+from datetime import datetime
+
 
 from config import db_config
 from app import webapp
@@ -82,3 +85,30 @@ def randomString(length):
         result += characters[random.randint(0, charactersLength - 1)]
     print(result)
     return result
+
+def put_HTTP_metric():
+    f = open('ec2_id.txt', 'r')
+    id = f.readline().strip()
+    client = boto3.client('cloudwatch')
+    response = client.put_metric_data(
+        Namespace='Custom',
+        MetricData=[
+            {
+                'MetricName': 'HTTPRequest',
+                'Dimensions': [
+                    {
+                        'Name': 'InstanceId',
+                        'Value': id,
+                    },
+                ],
+                'Timestamp': datetime.utcnow(),
+                'StatisticValues': {
+                    'SampleCount': 1.0,
+                    'Sum': 1.0,
+                    'Minimum': 1.0,
+                    'Maximum': 1.0
+                },
+                'StorageResolution': 60
+            },
+        ]
+    ) 
