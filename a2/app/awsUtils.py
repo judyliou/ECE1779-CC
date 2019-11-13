@@ -157,9 +157,10 @@ class AWSSuite:
         successNum = 0
         for i in range(num):
             res = self.growOneWorker()
-            successNum += 1
-            if res != awsConfig.REGISTERED:
-                return {'number': successNum, 'msg': res}
+            if res:
+                successNum += 1
+            # if res != awsConfig.REGISTERED:
+            #     return {'number': successNum, 'msg': res}
         return {'number': successNum, 'msg': awsConfig.REGISTERED}
 
     """
