@@ -100,7 +100,10 @@ class AWSSuite:
         if instance is None:
             return awsConfig.CREATE_FAILED
         # guess I need to start the instance whether is running or not
-        self.ec2.start_instances(InstanceIds=[instance["Id"]])
+        try:
+            self.ec2.start_instances(InstanceIds=[instance["Id"]])
+        except:
+            print("something's wrong when starting an instance, but doesn't matter")
 
         # here is the problem: new instance needs some time to run,
         # we need to wait for the start
@@ -126,16 +129,18 @@ class AWSSuite:
             instance = {
                 'Id': stateResponse['InstanceStatuses'][0]['InstanceId'],
             }
-
-        response = self.elb.register_targets(TargetGroupArn=awsConfig.grougArn,
-                                             Targets=[
-                                                 {
-                                                     'Id': instance['Id'],
-                                                     'Port': 5000
-                                                 },
-                                             ])
-        if response and 'ResponseMetadata' in response:
-            return awsConfig.REGISTERED
+        try:           
+            response = self.elb.register_targets(TargetGroupArn=awsConfig.grougArn,
+                                                Targets=[
+                                                    {
+                                                        'Id': instance['Id'],
+                                                        'Port': 5000
+                                                    },
+                                                ])
+            if response and 'ResponseMetadata' in response:
+                return awsConfig.REGISTERED
+        except:
+            print("something's wrong when registered, doesn't matter")
         # a response verify needed here
         return awsConfig.REGISTER_FAILED
 
