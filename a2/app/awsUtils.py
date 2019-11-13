@@ -370,18 +370,19 @@ class AWSSuite:
         cursor.execute(sQuery)
         config = cursor.fetchone()
         if config is not None:
-            ratio = config[0]
-            thresholdHigh = config[1]
-            thresholdLow = config[2]
-        return ratio, thresholdHigh, thresholdLow
+            ratioHigh = config[0]
+            rationLow = config[1]
+            thresholdHigh = config[2]
+            thresholdLow = config[3]
+        return ratioHigh, rationLow, thresholdHigh, thresholdLow
 
-    def changeConfig(self, ratio, thresholdHigh, thresholdLow):
+    def changeConfig(self, ratioHigh, rationLow, thresholdHigh, thresholdLow):
         cnx = self.get_db()
         cursor = cnx.cursor()
         tQuery = "truncate table a2.auto_config"
-        iQuery = "insert into a2.auto_config values (%s, %s, %s) "
+        iQuery = "insert into a2.auto_config values (%s, %s, %s, %s) "
         cursor.execute(tQuery)
         cnx.commit()
-        cursor.execute(iQuery, (ratio, thresholdHigh, thresholdLow, ))
+        cursor.execute(iQuery, (ratioHigh, rationLow, thresholdHigh, thresholdLow, ))
         cnx.commit()
         

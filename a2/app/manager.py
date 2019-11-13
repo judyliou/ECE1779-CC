@@ -67,20 +67,25 @@ def delete():
 
 @webapp.route('/config', methods=['GET', 'POST'])
 def config():
-    ratio, thresholdHigh, thresholdLow = awsSuite.fetchConfig()
-    return render_template("/config.html", ratio=ratio, thresholdHigh=thresholdHigh, thresholdLow=thresholdLow)
+    ratioHigh, ratioLow, thresholdHigh, thresholdLow = awsSuite.fetchConfig()
+    return render_template("/config.html", ratioHigh=ratioHigh, ratioLow=ratioLow, thresholdHigh=thresholdHigh, thresholdLow=thresholdLow)
 
 @webapp.route('/configAutoScaling', methods=['GET', 'POST'])
 def configAutoScaling():
-    ratio = request.form['ratio']
+    ratioHigh = request.form['ratioHogh']
+    ratioLow = request.form['ratioLow']
     thresholdHigh = request.form['thresholdHigh']
     thresholdLow = request.form['thresholdLow']
     error = False
-    ratioMsg = ""
+    ratiohMsg = ""
+    ratiolMsg = ""
     thMsg = ""
     tlMsg = ""
-    if not ratio.isdigit() or int(ratio) <= 0 or int(ratio) > 5:
-        ratioMsg = "Please input right ratio"
+    if not ratioHigh.isdigit() or int(ratioHigh) <= 0 or int(ratioHigh) > 5:
+        ratiohMsg = "Please input right ratio for thresholdHigh"
+        error = True
+    if not ratioLow.isdigit() or int(ratioLow) <= 0 or int(ratioLow) > 5:
+        ratiolMsg = "Please input right ratio for thresholdLow"
         error = True
     if not thresholdHigh.isdigit() or int(thresholdHigh) < 0 or int(thresholdHigh) > 100:
         thMsg = "Please input right thresholdHigh"
@@ -89,7 +94,7 @@ def configAutoScaling():
         tlMsg = "Please input right thresholdLow"
         error = True
     if error is False:
-        awsSuite.changeConfig(int(ratio), int(thresholdHigh), int(thresholdLow))
+        awsSuite.changeConfig(int(ratioHigh), int(ratioLow), int(thresholdHigh), int(thresholdLow))
         return redirect(url_for('view_manager'))
     else:
-        return render_template("/config.html", ratioMsg=ratioMsg, thMsg=thMsg, tlMsg=tlMsg)
+        return render_template("/config.html", ratiohMsg=ratiohMsg, ratiolMsg=ratiolMsg, thMsg=thMsg, tlMsg=tlMsg)

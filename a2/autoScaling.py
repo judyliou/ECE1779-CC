@@ -18,11 +18,11 @@ def fetch_policy():
     cursor.execute(query)
     config = cursor.fetchone()
 
-    ratio, threshold_high, threshold_low = config[0], config[1] * 0.9, config[2] * 1.1
-    return ratio, threshold_high, threshold_low
+    ratio_high, ratio_low, threshold_high, threshold_low = config[0], config[1], config[2] * 0.9, config[3] * 1.1
+    return ratio_high, ratio_low, threshold_high, threshold_low
 
 def check_status(flag):
-    ratio, threshold_high, threshold_low = fetch_policy()
+    ratio_high, ratio_low, threshold_high, threshold_low = fetch_policy()
 
     # get CPU data
     cpu = cloudwatch.get_metric_statistics( 
@@ -48,12 +48,20 @@ def check_status(flag):
     if flag == 0:
         num_workers = awsSuite.getWorkersNum()
         if avg_CPU >= threshold_high:
+<<<<<<< HEAD
             num_new_workers = num_workers * (ratio - 1)
+=======
+            num_new_workers = num_workers * (ratio_high - 1)
+>>>>>>> e0599df3975ed1c1dd5bb2b3fc1f495c2e0c6c3b
             print('over threshold, add ', num_new_workers, " workers")
             awsSuite.growWorkers(num_new_workers)
             flag = 1
         elif avg_CPU <= threshold_low:
+<<<<<<< HEAD
             num_new_workers = int((num_workers / ratio) * (ratio - 1))
+=======
+            num_new_workers = int((num_workers / ratio_low) * (ratio_low - 1))
+>>>>>>> e0599df3975ed1c1dd5bb2b3fc1f495c2e0c6c3b
             print('under threshold, shut ', num_new_workers, " workers")
             awsSuite.shrinkWorkers(num_new_workers)
             flag = 1
