@@ -4,7 +4,7 @@ import json
 from flask import g
 import mysql.connector
 
-from app.config import awsConfig
+import awsConfig
 
 
 class AWSSuite:

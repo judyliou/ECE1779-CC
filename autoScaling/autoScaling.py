@@ -2,9 +2,9 @@ import boto3
 from datetime import datetime, timedelta
 import threading
 
-from app.utils import *
-from app import awsUtils
-from app.config import awsConfig
+from utils import *
+import awsUtils
+import awsConfig
 
 awsSuite = awsUtils.AWSSuite()
 cloudwatch = boto3.client('cloudwatch')
@@ -49,10 +49,12 @@ def check_status(flag, target_worker_num):
         if avg_CPU >= threshold_high:
             num_new_workers = num_workers * (ratio_high - 1)
             target_worker_num = num_workers + num_new_workers
+            target_worker_num = 10 if target_worker_num > 10 else target_worker_num
             print('over threshold, add ', num_new_workers, " workers")
             awsSuite.growWorkers(num_new_workers)
             flag = 1
         elif avg_CPU <= threshold_low:
+            print("low thres is ", threshold_low)
             num_new_workers = int((num_workers / ratio_low) * (ratio_low - 1))
             target_worker_num = num_workers - num_new_workers
             print('under threshold, shut ', num_new_workers, " workers")
@@ -68,7 +70,7 @@ def check_status(flag, target_worker_num):
         #     flag = 0
 
     # Set a timer for checking every two minutes
-    timer = threading.Timer(20, check_status, [flag, target_worker_num])
+    timer = threading.Timer(120, check_status, [flag, target_worker_num])
     timer.start()    
 
 if __name__ == "__main__":
